@@ -45,16 +45,38 @@ const items = ref([
 <template>
     <v-container>
         <v-data-table :headers="headers" :items="items" class="elevation-1"></v-data-table>
-            <template v-slot:top>
-                <v-toolbar flat>
-                    <v-toolbar-title>Tipos de empaques</v-toolbar-title>
-                </v-toolbar>
-            </template>
+        <template v-slot:top>
+            <v-toolbar flat>
+                <v-toolbar-title>Tipos de empaques</v-toolbar-title>
+            </v-toolbar>
+        </template>
+    </v-container>
+    <v-container>
+        <!-- Botón 1 -->
+        <v-btn color="primary" variant="outlined" @click="handleButtonClick('Botón 1')">
+            Crear nuevo empaque
+        </v-btn>
+
+        <!-- Botón 2 -->
+        <v-btn color="secondary" variant="outlined" @click="handleButtonClick('Botón 2')">
+            Buscar por Id
+        </v-btn>
+
+        <!-- Botón 3 -->
+        <v-btn color="success" variant="outlined" @click="handleButtonClick('Botón 3')">
+            Editar elemento
+        </v-btn>
+
+        <!-- Botón 4 -->
+        <v-btn color="error" variant="outlined" @click="navigateTo('/FormDelEmp')">
+            Borrar elemento
+        </v-btn>
     </v-container>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 interface Empaque {
     id: number;
@@ -90,8 +112,25 @@ export default defineComponent({
         return { headers, items };
     },
 });
+
+// Función para manejar el clic en los botones
+// function handleButtonClick(buttonName: string) {
+//   alert(`¡${buttonName} clickeado!`);
+// }
+
+
+const router = useRouter();
+// Función para navegar a una ruta específica
+function navigateTo(path: string) {
+  router.push(path);
+}
 </script>
 
 <style scoped>
 /* Puedes agregar estilos personalizados aquí */
+
+/* Estilos opcionales para los botones */
+v-btn {
+  margin-right: 8px;
+}
 </style>
