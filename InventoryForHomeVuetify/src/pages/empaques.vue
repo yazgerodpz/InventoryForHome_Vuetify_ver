@@ -1,55 +1,13 @@
-<!-- <template>
-        estoy en empaques
-    <v-container>
-        <v-data-table :headers="headers" :items="items" item-value="name" class="elevation-1">
-            <template v-slot:top>
-                <v-toolbar flat>
-                    <v-toolbar-title>Tipos de empaques</v-toolbar-title>
-                </v-toolbar>
-            </template>
-
-            <template v-slot:item="{ item }">
-                <tr>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.age }}</td>
-                    <td>{{ item.email }}</td>
-                </tr>
-            </template>
-        </v-data-table>
-    </v-container>
-</template>
-
-
-
-<script lang="ts" setup>
-import { ref } from 'vue';
-
-// Define los encabezados de la tabla
-const headers = ref([
-  { text: 'Nombre', value: 'name' },
-  { text: 'Edad', value: 'age' },
-  { text: 'Email', value: 'email' },
-]);
-
-// Define los datos de la tabla
-const items = ref([
-  { name: 'Juan Pérez', age: 30, email: 'juan@example.com' },
-  { name: 'Ana Gómez', age: 25, email: 'ana@example.com' },
-  { name: 'Luis Martínez', age: 35, email: 'luis@example.com' },
-]);
-</script>
-
-<style scoped>
-/* Puedes agregar estilos aquí si es necesario */
-</style> -->
 <template>
     <v-container>
-        <v-data-table :headers="headers" :items="items" class="elevation-1"></v-data-table>
-        <template v-slot:top>
-            <v-toolbar flat>
-                <v-toolbar-title>Tipos de empaques</v-toolbar-title>
-            </v-toolbar>
-        </template>
+        <v-data-table :headers="headers" :items="items" class="elevation-1">
+            <template #item.id="{ item }">
+                {{ item.id }}
+            </template>
+            <template #item.type="{ item }">
+                {{ item.type }}
+            </template>
+        </v-data-table>
     </v-container>
     <v-container>
         <!-- Botón 1 -->
@@ -68,69 +26,55 @@ const items = ref([
         </v-btn>
 
         <!-- Botón 4 -->
-        <v-btn color="error" variant="outlined" @click="navigateTo('/FormDelEmp')">
+        <v-btn color="error" variant="outlined" @click="handleButtonClick('Botón 4')">
             Borrar elemento
         </v-btn>
     </v-container>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+<script lang="ts" setup>
+// import { ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-interface Empaque {
-    id: number;
-    type: string;
-}
+const router = useRouter();
 
-export default defineComponent({
-    setup() {
-        // Definimos los encabezados de la tabla
-        const headers = ref([
-            { text: 'ID', value: 'id' },
-            { text: 'Tipo de Empaques', value: 'type' },
-        ]);
 
-        // Definimos los items como un array vacío que se llenará dinámicamente
-        const items = ref<Empaque[]>([]);
+// Definimos las cabeceras de la tabla
+const headers = ref([
+    { text: 'ID', value: 'id' },
+    { text: 'Tipo de empaques', value: 'type' }
+]);
 
-        // Función para simular la obtención de datos
-        const obtenerDatosEmpaques = () => {
-            // Aquí puedes hacer una llamada a una API o llenar los datos de forma manual
-            items.value = [
-                { id: 1, type: 'Caja' },
-                { id: 2, type: 'Bolsa' },
-                { id: 3, type: 'Contenedor' },
-            ];
-        };
+// Definimos los datos de los empaques
+const items = ref([
+    { id: 1, type: 'Caja' },
+    { id: 2, type: 'Bolsa' },
+    { id: 3, type: 'Palet' }
+]);
 
-        // Llenamos los datos cuando el componente se monta
-        onMounted(() => {
-            obtenerDatosEmpaques();
-        });
-
-        return { headers, items };
-    },
-});
-
-// Función para manejar el clic en los botones
 // function handleButtonClick(buttonName: string) {
-//   alert(`¡${buttonName} clickeado!`);
+//     alert(`¡${buttonName} clickeado!`);
 // }
 
-
-const router = useRouter();
-// Función para navegar a una ruta específica
-function navigateTo(path: string) {
-  router.push(path);
+function handleButtonClick(buttonName: string) {
+    if (buttonName === 'Botón 1') {
+        router.push({ name: 'formEmpC' }); // Cambia 'formEmpC' por el nombre de la ruta en tu archivo de rutas
+    } else {
+        alert(`¡${buttonName} clickeado!`);
+    }
 }
 </script>
 
 <style scoped>
-/* Puedes agregar estilos personalizados aquí */
+/* Estilos personalizados para la tabla */
 
 /* Estilos opcionales para los botones */
 v-btn {
-  margin-right: 8px;
+    margin-right: 8px;
+}
+
+.elevation-1 {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>
