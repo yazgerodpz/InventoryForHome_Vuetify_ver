@@ -1,10 +1,5 @@
 <template>
     <v-container>
-        <v-data-table :headers="headers" :items="priorityRules" class="elevation-1" item-value="id" :items-per-page="5"
-            hide-default-footer>
-        </v-data-table>
-    </v-container>
-    <v-container>
         <!-- Botón 1 -->
         <v-btn color="primary" variant="outlined" @click="handleButtonClick('Botón 1')">
             Crear nueva regla
@@ -25,6 +20,13 @@
             Borrar elemento
         </v-btn>
     </v-container>
+    <v-container>
+        <v-data-table :headers="headers" :items="priorityRules" class="elevation-1" item-value="id" :items-per-page="5"
+            hide-default-footer>
+        </v-data-table>
+    </v-container>
+    <FormPrioC></FormPrioC>
+    <FormPrioR></FormPrioR>
 </template>
   
   <script setup lang="ts">

@@ -8,6 +8,12 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AppBar: typeof import('./src/components/AppBar.vue')['default']
+    FormEmpC: typeof import('./src/components/FormEmpC.vue')['default']
+    FormEmpR: typeof import('./src/components/FormEmpR.vue')['default']
+    FormInvC: typeof import('./src/components/FormInvC.vue')['default']
+    FormInvR: typeof import('./src/components/FormInvR.vue')['default']
+    FormPrioC: typeof import('./src/components/FormPrioC.vue')['default']
+    FormPrioR: typeof import('./src/components/FormPrioR.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

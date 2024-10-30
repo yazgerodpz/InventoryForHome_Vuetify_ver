@@ -1,39 +1,41 @@
     Estoy en Inventario
     -------
     Aquiesta la tabla invocada
-    <template>
-        <v-container>
-            <v-data-table :items="items" :headers="headers" item-value="id" class="elevation-1">
-                <!-- <template v-slot:[`item.Fecha de compra`]="{ item }">
-                    <span>{{ formatDate(item.purchaseDate) }}</span>
-                </template>
-                <template v-slot:[`item.Fecha de expiracion`]="{ item }">
-                    <span>{{ formatDate(item.expirationDate) }}</span>
-                </template> -->
-            </v-data-table>
-        </v-container>
-        <v-container>
-        <!-- Botón 1 -->
-        <v-btn color="primary" variant="outlined" @click="handleButtonClick('Botón 1')">
-            Crear nuevo artículo
-        </v-btn>
+<template>
+  <v-container>
+    <!-- Botón 1 -->
+    <v-btn color="primary" variant="outlined" @click="handleButtonClick('Botón 1')">
+      Crear nuevo artículo
+    </v-btn>
 
-        <!-- Botón 2 -->
-        <v-btn color="secondary" variant="outlined" @click="handleButtonClick('Botón 2')">
-            Buscar por Id
-        </v-btn>
+    <!-- Botón 2 -->
+    <v-btn color="secondary" variant="outlined" @click="handleButtonClick('Botón 2')">
+      Buscar por Id
+    </v-btn>
 
-        <!-- Botón 3 -->
-        <v-btn color="success" variant="outlined" @click="handleButtonClick('Botón 3')">
-            Editar elemento
-        </v-btn>
+    <!-- Botón 3 -->
+    <v-btn color="success" variant="outlined" @click="handleButtonClick('Botón 3')">
+      Editar elemento
+    </v-btn>
 
-        <!-- Botón 4 -->
-        <v-btn color="error" variant="outlined" @click="handleButtonClick('Botón 4')">
-            Borrar elemento
-        </v-btn>
-    </v-container>
-    </template>
+    <!-- Botón 4 -->
+    <v-btn color="error" variant="outlined" @click="handleButtonClick('Botón 4')">
+      Borrar elemento
+    </v-btn>
+  </v-container>
+  <v-container>
+    <v-data-table :items="items" :headers="headers" item-value="id" class="elevation-1">
+      <!-- <template v-slot:[`item.Fecha de compra`]="{ item }">
+        <span>{{ formatDate(item.purchaseDate) }}</span>
+      </template>
+      <template v-slot:[`item.Fecha de expiracion`]="{ item }">
+        <span>{{ formatDate(item.expirationDate) }}</span>
+      </template> -->
+    </v-data-table>
+  </v-container>
+  <FormInvC></FormInvC>
+  <FormInvR></FormInvR>
+</template>
 
 
 <script setup lang="ts">

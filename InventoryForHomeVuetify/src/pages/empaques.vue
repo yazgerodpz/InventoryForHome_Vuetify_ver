@@ -1,15 +1,5 @@
 <template>
-    <v-container>
-        <v-data-table :headers="headers" :items="items" class="elevation-1">
-            <template #item.id="{ item }">
-                {{ item.id }}
-            </template>
-            <template #item.type="{ item }">
-                {{ item.type }}
-            </template>
-        </v-data-table>
-    </v-container>
-    <v-container>
+        <v-container>
         <!-- Botón 1 -->
         <v-btn color="primary" variant="outlined" @click="handleButtonClick('Botón 1')">
             Crear nuevo empaque
@@ -30,15 +20,22 @@
             Borrar elemento
         </v-btn>
     </v-container>
+    <v-container>
+        <v-data-table :headers="headers" :items="items" class="elevation-1">
+            <template #item.id="{ item }">
+                {{ item.id }}
+            </template>
+            <template #item.type="{ item }">
+                {{ item.type }}
+            </template>
+        </v-data-table>
+    </v-container>
+    <FormEmpC></FormEmpC>
+    <FormEmpR></FormEmpR>
 </template>
 
 <script lang="ts" setup>
-// import { ref } from 'vue';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
 
 // Definimos las cabeceras de la tabla
 const headers = ref([
@@ -53,17 +50,10 @@ const items = ref([
     { id: 3, type: 'Palet' }
 ]);
 
-// function handleButtonClick(buttonName: string) {
-//     alert(`¡${buttonName} clickeado!`);
-// }
-
 function handleButtonClick(buttonName: string) {
-    if (buttonName === 'Botón 1') {
-        router.push({ name: 'formEmpC' }); // Cambia 'formEmpC' por el nombre de la ruta en tu archivo de rutas
-    } else {
-        alert(`¡${buttonName} clickeado!`);
-    }
+    alert(`¡${buttonName} clickeado!`);
 }
+
 </script>
 
 <style scoped>
