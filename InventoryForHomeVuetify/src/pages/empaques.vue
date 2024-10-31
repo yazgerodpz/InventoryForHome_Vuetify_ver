@@ -32,6 +32,8 @@
     </v-container>
     <FormEmpC></FormEmpC>
     <FormEmpR></FormEmpR>
+    <FormEmpU></FormEmpU>
+    <FormEmpD></FormEmpD>
 </template>
 
 <script lang="ts" setup>

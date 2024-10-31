@@ -28,13 +28,14 @@
       <!-- <template v-slot:[`item.Fecha de compra`]="{ item }">
         <span>{{ formatDate(item.purchaseDate) }}</span>
       </template>
-      <template v-slot:[`item.Fecha de expiracion`]="{ item }">
+<template v-slot:[`item.Fecha de expiracion`]="{ item }">
         <span>{{ formatDate(item.expirationDate) }}</span>
       </template> -->
     </v-data-table>
   </v-container>
   <FormInvC></FormInvC>
   <FormInvR></FormInvR>
+  <FormInvD></FormInvD>
 </template>
 
 
