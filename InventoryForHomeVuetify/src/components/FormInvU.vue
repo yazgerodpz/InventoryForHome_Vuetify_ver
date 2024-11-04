@@ -56,11 +56,12 @@
               <!-- Campo para regla de prioridad (list box) -->
               <v-col cols="12" md="4">
                 <v-select
-                  v-model="newPriorityRule"
-                  :items="priorityRules"
-                  label="Regla de prioridad"
-                  :rules="[rules.required]"
-                  outlined
+                  v-model="selectedPriority"
+                  :items="priorityOptions"
+                  item-title="typePrioritaryName"
+                  item-value="idTypePrioritary"
+                  label="Seleccione Prioridad"
+                  :rules="[v => !!v || 'Este campo es obligatorio']"
                   required
                 ></v-select>
               </v-col>
@@ -68,11 +69,12 @@
               <!-- Campo para tipo de empaque (list box) -->
               <v-col cols="12" md="4">
                 <v-select
-                  v-model="newPackagingType"
-                  :items="packagingTypes"
-                  label="Tipo de empaque"
-                  :rules="[rules.required]"
-                  outlined
+                  v-model="selectedStock"
+                  :items="stockOptions"
+                  item-title="typeStockName"
+                  item-value="idTypeStock"
+                  label="Seleccione Tipo de Stock"
+                  :rules="[v => !!v || 'Este campo es obligatorio']"
                   required
                 ></v-select>
               </v-col>
@@ -174,8 +176,54 @@
       ];
   
       // Opciones para los selectores
-      const priorityRules = ['Alta', 'Media', 'Baja'];
-      const packagingTypes = ['Caja', 'Bolsa', 'Palet'];
+      const priorityOptions = ref([
+      {
+        idTypePrioritary: 1,
+        typePrioritaryName: "Alta",
+        _Description: "Primera necesidad",
+        active: true
+      },
+      {
+        idTypePrioritary: 2,
+        typePrioritaryName: "Media",
+        _Description: "Artículos de consumo menos frecuente",
+        active: true
+      },
+      {
+        idTypePrioritary: 4,
+        typePrioritaryName: "Baja",
+        _Description: "artículos de altas fechas de caducidad y poco consumo",
+        active: true
+      }
+    ]);
+      // const packagingTypes = ['Caja', 'Bolsa', 'Palet'];
+      const stockOptions = ref([
+      {
+        idTypeStock: 1,
+        typeStockName: "Botella de 1L",
+        active: true
+      },
+      {
+        idTypeStock: 2,
+        typeStockName: "Bolsa de 900g",
+        active: true
+      },
+      {
+        idTypeStock: 5,
+        typeStockName: "Botella de 500ml",
+        active: true
+      },
+      {
+        idTypeStock: 6,
+        typeStockName: "Bote de 1L",
+        active: true
+      },
+      {
+        idTypeStock: 7,
+        typeStockName: "Prueba 2",
+        active: true
+      }
+    ]);
   
       // Reglas de validación para los campos de búsqueda y actualización
       const rules = {
@@ -229,6 +277,10 @@
         searchId.value = null;
         selectedItem.value = null;
       };
+
+      // Variable para almacenar la opción seleccionada
+      const selectedStock = ref<number | null>(null);
+      const selectedPriority = ref<number | null>(null);
   
       return {
         searchId,
@@ -244,12 +296,15 @@
         tableHeaders,
         items,
         selectedItem,
-        priorityRules,
-        packagingTypes,
         searchById,
         updateFields,
         clearForm,
         clearSearch,
+
+        stockOptions,
+        selectedStock,
+        priorityOptions,
+        selectedPriority
       };
     },
   });

@@ -24,14 +24,19 @@
     </v-btn>
   </v-container>
   <v-container>
-    <v-data-table :items="items" :headers="headers" item-value="id" class="elevation-1">
-      <!-- <template v-slot:[`item.Fecha de compra`]="{ item }">
-        <span>{{ formatDate(item.purchaseDate) }}</span>
-      </template>
-<template v-slot:[`item.Fecha de expiracion`]="{ item }">
-        <span>{{ formatDate(item.expirationDate) }}</span>
-      </template> -->
-    </v-data-table>
+  <v-data-table
+    :headers="headers"
+    :items="dataInventario"
+    :items-per-page="5"
+    class="elevation-1"
+  >
+    <template #item.purchesDate="{ item }">
+      {{ formatDate(item.purchesDate) }}
+    </template>
+    <template #item.expirationDate="{ item }">
+      {{ formatDate(item.expirationDate) }}
+    </template>
+  </v-data-table>
   </v-container>
   <FormInvC></FormInvC>
   <FormInvR></FormInvR>
@@ -41,46 +46,109 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
+import ApiService from '@/services/apiServices'; //ME TRAIGO EL SERVICIO PARA CONSUMIR API
 
-// Definición de las columnas
-const headers = [
-  { text: 'ID', value: 'id' },
-  { text: 'Nombre del artículo', value: 'name' },
-  { text: 'Cantidad', value: 'quantity' },
-  { text: 'Tipo de prioridad', value: 'priorityType' },
-  { text: 'Tipo de empaque', value: 'packagingType' },
-  { text: 'Fecha de compra', value: 'purchaseDate' },
-  { text: 'Fecha de expiración', value: 'expirationDate' },
-];
+interface DataItem {
+  idItem: number;
+  itemName: string;
+  stock: number;
+  typePrioritaryName: string;
+  typeStockName: string;
+  purchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
+  expirationDate: Date; // Lo mismo aquí
+}
 
-// Datos de los ítems
-const items = ref([
+interface ResponseApi  { //OBJETO DE RESPUESTA API
+  success: boolean;
+  data: DataItem[];
+}
+
+const responseAPI = ref<ResponseApi>(); //INSTANCIA NUEVA DE RESPUETA API
+const dataInventario = ref<DataItem[]>([]); //LA LISTA DE OBJETOS QUE VOY A MONTAR EN MIS INTERFACES
+
+//Funcion de traida de datos.
+const getInventario = async () => 
+{
+  try
   {
-    id: 1,
-    name: 'Artículo 1',
-    quantity: 10,
-    priorityType: 'Alta',
-    packagingType: 'Caja',
-    purchaseDate: '2024-01-10',
-    expirationDate: '2025-01-10',
-  },
+    responseAPI.value = await ApiService.getData<ResponseApi>('Inventario/ReadInvs');
+    // console.log(responseAPI.value);
+    dataInventario.value = responseAPI.value.data;
+  }
+  catch(error)
   {
-    id: 2,
-    name: 'Artículo 2',
-    quantity: 5,
-    priorityType: 'Media',
-    packagingType: 'Bolsa',
-    purchaseDate: '2024-02-20',
-    expirationDate: '2025-02-20',
-  },
-  // Agrega más objetos según sea necesario
+    console.error('ERROR AL TRAER DATOS EN',error);
+  }
+  finally
+  {
+  }
+}
+
+onBeforeMount(getInventario);
+
+// Definir los encabezados de la tabla
+const headers = ref([
+  { text: 'ID', value: 'idItem' },
+  { text: 'Nombre', value: 'itemName' },
+  { text: 'Stock', value: 'stock' },
+  { text: 'Prioridad', value: 'typePrioritaryName' },
+  { text: 'Tipo de Stock', value: 'typeStockName' },
+  { text: 'Fecha de Compra', value: 'purchesDate' },
+  { text: 'Fecha de Expiración', value: 'expirationDate' }
 ]);
 
-// Formato de fechas
-function formatDate(date: string) {
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Date(date).toLocaleDateString(undefined, options);
+// Datos de los ítems
+// const items = ref<DataItem[]>([
+//   {
+//     idItem: 1,
+//     itemName: "Helado Fresa",
+//     stock: 10,
+//     typePrioritaryName: "Alta",
+//     typeStockName: "Botella de 1L",
+//     purchesDate: new Date("2022-03-19T05:30:37.36"),
+//     expirationDate: new Date("2024-10-19T05:30:37.36")
+//   },
+//   {
+//     idItem: 2,
+//     itemName: "coca cola",
+//     stock: 12,
+//     typePrioritaryName: "Alta",
+//     typeStockName: "botella de 500ml",
+//     purchesDate: new Date("2024-10-23T03:00:02.52"),
+//     expirationDate: new Date("2025-10-23T03:00:02.52")
+//   },
+//   {
+//     idItem: 3,
+//     itemName: "helado chocolate",
+//     stock: 2,
+//     typePrioritaryName: "Alta",
+//     typeStockName: "bote de 1l",
+//     purchesDate: new Date("2024-10-23T03:02:38.883"),
+//     expirationDate: new Date("2025-10-23T03:02:38.883")
+//   },
+//   {
+//     idItem: 6,
+//     itemName: "prueba 3",
+//     stock: 20,
+//     typePrioritaryName: "Media",
+//     typeStockName: "prueba 2",
+//     purchesDate: new Date("2022-10-23T03:36:41.737"),
+//     expirationDate: new Date("2027-10-23T03:36:41.737")
+//   },
+//   {
+//     idItem: 8,
+//     itemName: "prueba 6",
+//     stock: 12,
+//     typePrioritaryName: "Baja",
+//     typeStockName: "Bolsa de 900g",
+//     purchesDate: new Date("2024-12-23T03:56:38.53"),
+//     expirationDate: new Date("2034-10-23T03:56:38.53")
+//   }
+// ]);
+function formatDate(date: Date): string {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  return date.toLocaleDateString(undefined, options);
 }
 
 function handleButtonClick(buttonName: string) {
