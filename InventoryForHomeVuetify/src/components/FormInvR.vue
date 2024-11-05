@@ -29,7 +29,7 @@
       </v-card>
   
       <v-data-table
-        :items="filteredItems"
+        :items="findArt"
         :headers="tableHeaders"
         class="mt-4"
       ></v-data-table>
@@ -38,12 +38,49 @@
   
   <script lang="ts">
   import { defineComponent, ref, computed } from 'vue';
+  import ApiService from '@/services/apiServices'; //ME TRAIGO EL SERVICIO PARA CONSUMIR API
   
   export default defineComponent({
     name: 'SearchForm',
     setup() {
       const searchId = ref<number | null>(null);
       const isFormValid = ref(false);
+
+      interface ItemAPI {
+    idItem: number;
+    itemName: string;
+    stock: number;
+    typePrioritaryName: string;
+    typeStockName: string;
+    purchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
+    expirationDate: Date; // Lo mismo aquí
+  }
+
+  interface ResponseApi { //OBJETO DE RESPUESTA API
+    success: boolean;
+    data: ItemAPI[];
+  }
+  
+  const rAPI = ref<ResponseApi>();
+  const findArt = ref<ItemAPI[]>([]);
+
+  const getById = async () =>
+  {
+    try
+    {
+      rAPI.value = await ApiService.getData<ResponseApi>('Inventario/ReadInvById/{id}');
+      console.log(rAPI.value);
+      findArt.value = rAPI.value.data;
+    }
+    catch(error)
+    {
+      console.error('ERROR AL TRAER DATOS EN',error);
+    }
+    finally
+    {
+
+    }
+  }
   
       // Ejemplo de datos de la tabla
       const items = ref([
@@ -66,7 +103,7 @@
   
       // Computed para los elementos filtrados
       const filteredItems = computed(() =>
-        searchId.value !== null ? items.value.filter((item) => item.id === searchId.value) : items.value
+        searchId.value !== null ? findArt.value.filter((item) => findArt.id === searchId.value) : findArt.value
       );
   
       // Función de búsqueda
@@ -92,6 +129,8 @@
       };
     },
   });
+
+  
   </script>
   
   <style scoped>

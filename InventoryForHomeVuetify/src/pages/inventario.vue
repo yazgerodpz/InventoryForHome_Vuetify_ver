@@ -30,12 +30,12 @@
     :items-per-page="5"
     class="elevation-1"
   >
-    <template #item.purchesDate="{ item }">
-      {{ formatDate(item.purchesDate) }}
-    </template>
-    <template #item.expirationDate="{ item }">
-      {{ formatDate(item.expirationDate) }}
-    </template>
+  <template v-slot:[`item.purchesDate`]="{ item }">
+          {{ new Date(item.purchesDate).toLocaleDateString() }}
+        </template>
+        <template v-slot:[`item.expirationDate`]="{ item }">
+          {{ new Date(item.expirationDate).toLocaleDateString() }}
+        </template>
   </v-data-table>
   </v-container>
   <FormInvC></FormInvC>
@@ -98,58 +98,6 @@ const headers = ref([
   { text: 'Fecha de Expiración', value: 'expirationDate' }
 ]);
 
-// Datos de los ítems
-// const items = ref<DataItem[]>([
-//   {
-//     idItem: 1,
-//     itemName: "Helado Fresa",
-//     stock: 10,
-//     typePrioritaryName: "Alta",
-//     typeStockName: "Botella de 1L",
-//     purchesDate: new Date("2022-03-19T05:30:37.36"),
-//     expirationDate: new Date("2024-10-19T05:30:37.36")
-//   },
-//   {
-//     idItem: 2,
-//     itemName: "coca cola",
-//     stock: 12,
-//     typePrioritaryName: "Alta",
-//     typeStockName: "botella de 500ml",
-//     purchesDate: new Date("2024-10-23T03:00:02.52"),
-//     expirationDate: new Date("2025-10-23T03:00:02.52")
-//   },
-//   {
-//     idItem: 3,
-//     itemName: "helado chocolate",
-//     stock: 2,
-//     typePrioritaryName: "Alta",
-//     typeStockName: "bote de 1l",
-//     purchesDate: new Date("2024-10-23T03:02:38.883"),
-//     expirationDate: new Date("2025-10-23T03:02:38.883")
-//   },
-//   {
-//     idItem: 6,
-//     itemName: "prueba 3",
-//     stock: 20,
-//     typePrioritaryName: "Media",
-//     typeStockName: "prueba 2",
-//     purchesDate: new Date("2022-10-23T03:36:41.737"),
-//     expirationDate: new Date("2027-10-23T03:36:41.737")
-//   },
-//   {
-//     idItem: 8,
-//     itemName: "prueba 6",
-//     stock: 12,
-//     typePrioritaryName: "Baja",
-//     typeStockName: "Bolsa de 900g",
-//     purchesDate: new Date("2024-12-23T03:56:38.53"),
-//     expirationDate: new Date("2034-10-23T03:56:38.53")
-//   }
-// ]);
-function formatDate(date: Date): string {
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  return date.toLocaleDateString(undefined, options);
-}
 
 function handleButtonClick(buttonName: string) {
   alert(`¡${buttonName} clickeado!`);
