@@ -61,13 +61,6 @@
           </v-form>
         </v-card-text>
       </v-card>
-  
-      <!-- Tabla de elementos -->
-      <v-data-table
-        :items="items"
-        :headers="tableHeaders"
-        class="mt-4"
-      ></v-data-table>
     </v-container>
   </template>
   

@@ -34,7 +34,6 @@
   </v-data-table>
     </v-container>
     <FormEmpC></FormEmpC>
-    <FormEmpR></FormEmpR>
     <FormEmpU></FormEmpU>
     <FormEmpD></FormEmpD>
 </template>

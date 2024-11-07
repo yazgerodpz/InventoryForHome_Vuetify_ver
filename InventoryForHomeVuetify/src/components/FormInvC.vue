@@ -52,7 +52,6 @@
               :rules="fechaRules"
               required
             ></v-date-picker>
-  
             <v-date-picker
               v-model="fechaExpiracion"
               label="Fecha de expiración"
@@ -72,69 +71,75 @@
   </template>
   
   <script lang="ts">
-  import { defineComponent, ref } from 'vue';
+  import { defineComponent, ref, onBeforeMount } from 'vue';
+  import ApiService from '@/services/apiServices';
+
   
+
   export default defineComponent({
     name: 'CuestionarioNuevoArticulo',
+
+    
+
     setup() {
       const valid = ref(false);
       const nombreArticulo = ref<string>('');
       const cantidad = ref<number | null>(null);
-      const reglaPrioridad = ref<string | null>(null);
-      const tipoEmpaque = ref<string | null>(null);
-      const fechaCompra = ref<string | null>(null);
-      const fechaExpiracion = ref<string | null>(null);
-  
-      // Opciones de lista para los listbox
-      // Datos de prioridad con sus propiedades
-      const priorityOptions = ref([
-        {
-          idTypePrioritary: 1,
-          typePrioritaryName: "Alta",
-          _Description: "Primera necesidad",
-          active: true
-        },
-        {
-          idTypePrioritary: 2,
-          typePrioritaryName: "Media",
-          _Description: "Artículos de consumo menos frecuente",
-          active: true
-        },
-        {
-          idTypePrioritary: 4,
-          typePrioritaryName: "Baja",
-          _Description: "artículos de altas fechas de caducidad y poco consumo",
-          active: true
-        }
-      ]);
-
-      const stockOptions = ref([
-      {
-        idTypeStock: 1,
-        typeStockName: "Botella de 1L",
-        active: true
-      },
-      {
-        idTypeStock: 2,
-        typeStockName: "Bolsa de 900g",
-        active: true
-      },
-      {
-        idTypeStock: 5,
-        typeStockName: "Botella de 500ml",
-        active: true
-      },
-      {
-        idTypeStock: 6,
-        typeStockName: "Bote de 1L",
-        active: true
-      },
-      {
-        idTypeStock: 7,
-        typeStockName: "Prueba 2",
-        active: true
+      const reglaPrioridad = ref<number | null>(null);
+      const tipoEmpaque = ref<number | null>(null);
+      const fechaCompra = ref<Date | null>(null);
+      const fechaExpiracion = ref<Date | null>(null);
+      
+      interface empMain { //estructura de la información de la tabla
+        IdTypeStock: number;
+        TypeStockName: string;
+        active: boolean;
       }
-    ]);
+
+      interface empApiMain { //estructura del objeto que se trae del api
+          success: boolean;
+          data: empMain [];
+      }
+
+      const responseAPIEmpaques = ref<empApiMain>(); //INSTANCIA NUEVA DE RESPUETA API
+      const stockOptions = ref<empMain[]>([]); //LA LISTA DE OBJETOS QUE VOY A MONTAR EN MIS INTERFACES
+
+      interface prioMain {
+        IdTypePrioritary: number;
+        TypePrioritaryName: string;
+        Description: string;
+        active: boolean;
+      }
+
+      interface prioApiMain { //estructura del objeto que se trae del api
+        success: boolean;
+        data: prioMain[];
+      }
+
+      const responseAPIPrioridades = ref<prioApiMain>(); //INSTANCIA NUEVA DE RESPUETA API
+      const priorityOptions = ref<prioMain[]>([]); //LA LISTA DE OBJETOS QUE VOY A MONTAR EN MIS INTERFACES
+      
+      const getCatalogos = async () =>
+      {
+          try 
+          {
+            responseAPIEmpaques.value = await ApiService.getData<empApiMain>('Empaques/ReadEmps');
+              // console.log(responseAPIEmpaques.value);
+              stockOptions.value = responseAPIEmpaques.value.data;
+
+              responseAPIPrioridades.value = await ApiService.getData<prioApiMain>('Prioridades/ReadPrios');
+              // console.log(responseAPIPrioridades.value);
+              priorityOptions.value = responseAPIPrioridades.value.data;
+
+          }
+          catch(error)
+          {
+              console.error('ERROR AL TRAER DATOS EN',error);
+          }
+          finally
+          {
+          }
+      }
   
       const nombreArticuloRules = [
         (v: string) => !!v || 'El nombre del artículo es obligatorio',
@@ -178,6 +183,11 @@
       const selectedPriority = ref<number | null>(null);
       const selectedStock = ref<number | null>(null);
   
+      // Ejecutar getCatalogos antes de que el componente se monte
+      onBeforeMount(() => {
+        getCatalogos();
+      });
+
       return {
         valid,
         nombreArticulo,

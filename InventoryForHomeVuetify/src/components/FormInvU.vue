@@ -115,13 +115,6 @@
           </v-form>
         </v-card-text>
       </v-card>
-  
-      <!-- Tabla de elementos -->
-      <v-data-table
-        :items="items"
-        :headers="tableHeaders"
-        class="mt-4"
-      ></v-data-table>
     </v-container>
   </template>
   
@@ -174,8 +167,7 @@
         { text: 'Fecha de Compra', value: 'purchaseDate' },
         { text: 'Fecha de Expiración', value: 'expirationDate' },
       ];
-  
-      // Opciones para los selectores
+      
       const priorityOptions = ref([
       {
         idTypePrioritary: 1,
@@ -196,8 +188,8 @@
         active: true
       }
     ]);
-      // const packagingTypes = ['Caja', 'Bolsa', 'Palet'];
-      const stockOptions = ref([
+    
+    const stockOptions = ref([
       {
         idTypeStock: 1,
         typeStockName: "Botella de 1L",

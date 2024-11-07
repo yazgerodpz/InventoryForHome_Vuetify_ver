@@ -1,6 +1,3 @@
-    Estoy en Inventario
-    -------
-    Aquiesta la tabla invocada
 <template>
   <v-container>
     <!-- Botón 1 -->
@@ -39,7 +36,6 @@
   </v-data-table>
   </v-container>
   <FormInvC></FormInvC>
-  <FormInvR></FormInvR>
   <FormInvU></FormInvU>
   <FormInvD></FormInvD>
 </template>
@@ -112,12 +108,3 @@ v-btn {
   margin-right: 8px;
 }
 </style>
-
--------
-aca el formulario de Nuevo elemento
--------
-aca el de buscae elemento
--------
-aca el formulario de Editar elemento
--------
-aca el formulario de eliminar elemento
