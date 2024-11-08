@@ -27,6 +27,17 @@ class ApiService
             throw error;
         }
     }
+
+    public async postData<T>(endpoint: string, data: T): Promise<T> {
+        try {
+            const response = await this.axiosInstance.post<T>(endpoint, data);
+            return response.data;
+        } catch (error) {
+            console.error('ERROR AL ENVIAR DATOS A', endpoint, error);
+            throw error;
+        }
+    }
+    
 }
 
 export default new ApiService();
