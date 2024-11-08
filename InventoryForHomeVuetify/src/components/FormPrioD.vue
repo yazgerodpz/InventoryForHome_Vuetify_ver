@@ -28,11 +28,11 @@
         </v-card-text>
       </v-card>
   
-      <v-data-table
+      <!-- <v-data-table
         :items="items"
         :headers="tableHeaders"
         class="mt-4"
-      ></v-data-table>
+      ></v-data-table> -->
     </v-container>
   </template>
   

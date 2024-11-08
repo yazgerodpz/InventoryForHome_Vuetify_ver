@@ -4,19 +4,14 @@
     <v-btn color="primary" variant="outlined" @click="handleButtonClick('Botón 1')">
       Crear nueva regla
     </v-btn>
-
+    
     <!-- Botón 2 -->
-    <v-btn color="secondary" variant="outlined" @click="handleButtonClick('Botón 2')">
-      Buscar por Id
-    </v-btn>
-
-    <!-- Botón 3 -->
-    <v-btn color="success" variant="outlined" @click="handleButtonClick('Botón 3')">
+    <v-btn color="success" variant="outlined" @click="handleButtonClick('Botón 2')">
       Editar elemento
     </v-btn>
 
-    <!-- Botón 4 -->
-    <v-btn color="error" variant="outlined" @click="handleButtonClick('Botón 4')">
+    <!-- Botón 3 -->
+    <v-btn color="error" variant="outlined" @click="handleButtonClick('Botón 3')">
       Borrar elemento
     </v-btn>
   </v-container>
