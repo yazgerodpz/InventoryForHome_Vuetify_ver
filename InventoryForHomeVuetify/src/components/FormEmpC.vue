@@ -1,24 +1,21 @@
 <template>
     <v-container>
-                <v-form ref="formCrear" v-model="valid" lazy-validation>
-                    <v-text-field label="Nombre del nuevo empaque" v-model="nombreEmpaque" :rules="nombreEmpaqueRules"
-                        required></v-text-field>
-                </v-form>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" @click="submitForm"class="ma-2">Enviar</v-btn>
-                <v-btn color="secondary" @click="cancelForm"class="ma-2">Cancelar</v-btn>
+        <v-form ref="formCrear" v-model="valid" lazy-validation>
+            <v-text-field label="Nombre del nuevo empaque" v-model="nombreEmpaque" :rules="nombreEmpaqueRules"
+                required></v-text-field>
+        </v-form>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="submitForm" class="ma-2">Enviar</v-btn>
+        <v-btn color="secondary" @click="cancelForm" class="ma-2">Cancelar</v-btn>
     </v-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, defineEmits  } from 'vue';
+import { defineComponent, ref, defineEmits } from 'vue';
 
 export default defineComponent({
     name: 'CuestionarioEmpaque',
     setup(props,{emit}) {
-
-
-
         const valid = ref(false);
         const formCrear = ref();
         const nombreEmpaque = ref<string>('');

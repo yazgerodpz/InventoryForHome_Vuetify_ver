@@ -1,7 +1,5 @@
 <template>
     <v-container>
-        
-
         <!-- Dialogo Dinamico -->
         <v-dialog v-model="dialog" max-width="600">
             <template #activator="{ props }">
@@ -21,32 +19,23 @@
             <v-card>
                 <v-card-title>{{ dialogTitle }}</v-card-title>
                 <v-card-text>
-                <!-- Renderizar el componente dinámico -->
-                <component :is="dynamicComponent"  @closeDialog="closeDialog" />
+                    <!-- Renderizar el componente dinámico -->
+                    <component :is="dynamicComponent" @closeDialog="closeDialog" />
                 </v-card-text>
                 <v-card-actions>
-                <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-
     </v-container>
     <v-container>
-        <v-data-table
-        :headers="headers"
-        :items="mainEmp"
-        :items-per-page="10"
-        class="elevation-1"
-        >
-        <template #item.active="{ item }">
-      <v-icon v-if="item.active" color="green">mdi-check-circle</v-icon>
-      <v-icon v-else color="red">mdi-close-circle</v-icon>
-    </template>
-  </v-data-table>
+        <v-data-table :headers="headers" :items="mainEmp" :items-per-page="10" class="elevation-1">
+            <template #item.active="{ item }">
+                <v-icon v-if="item.active" color="green">mdi-check-circle</v-icon>
+                <v-icon v-else color="red">mdi-close-circle</v-icon>
+            </template>
+        </v-data-table>
     </v-container>
-    <!-- <FormEmpC></FormEmpC> -->
-    <!-- <FormEmpU></FormEmpU>
-    <FormEmpD></FormEmpD> -->
 </template>
 
 <script lang="ts" setup>

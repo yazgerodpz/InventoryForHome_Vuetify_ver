@@ -1,89 +1,80 @@
 <template>
   <v-container>
-    <v-card>
-      <v-card-title>Actualizar Información del Artículo por ID</v-card-title>
-      <v-card-text>
-        <!-- Formulario de búsqueda por ID -->
-        <v-form v-model="isFormValid" @submit.prevent="searchById">
-          <v-row>
-            <v-col cols="12" md="4">
-              <v-text-field v-model.number="searchId" label="ID del artículo" type="number"
-                :rules="[rules.required, rules.isNumber]" outlined required></v-text-field>
-            </v-col>
-            <v-col cols="12" md="4" class="d-flex align-center">
-              <v-btn :disabled="!isFormValid" color="primary" @click="searchById">
-                Buscar
-              </v-btn>
-              <v-btn color="secondary" @click="clearSearch" class="ml-2">
-                Cancelar
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
+    <!-- Formulario de búsqueda por ID -->
+    <v-form v-model="isFormValid" @submit.prevent="searchById">
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-text-field v-model.number="searchId" label="ID del artículo" type="number"
+            :rules="[rules.required, rules.isNumber, rules.nonNegative]" outlined required></v-text-field>
+        </v-col>
+        <v-col cols="12" md="4" class="d-flex align-center">
+          <v-btn type="submit" :disabled="!isFormValid" color="primary">
+            Buscar
+          </v-btn>
+          <v-btn color="secondary" @click="cancelar" class="ml-2">
+            Cancelar
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-form>
 
-        <!-- Formulario para actualizar información del artículo si el elemento es encontrado -->
-        <v-form v-if="selectedItem" v-model="isUpdateFormValid" @submit.prevent="updateFields">
-          <v-row>
-            <!-- Campo para nombre de artículo -->
-            <v-col cols="12" md="4">
-              <v-text-field v-model="newArticleName" label="Nombre del artículo" :rules="[rules.required]" outlined
-                required></v-text-field>
-            </v-col>
+    <!-- Formulario para actualizar información del artículo si el elemento es encontrado -->
+    <v-form v-if="selectedItem" v-model="isUpdateFormValid" @submit.prevent="updateFields">
+      <v-row>
+        <!-- Campo para nombre de artículo -->
+        <v-col cols="12" md="4">
+          <v-text-field v-model="newArticleName" label="Nombre del artículo" :rules="[rules.required]" outlined
+            required></v-text-field>
+        </v-col>
 
-            <!-- Campo para cantidad (numérico) -->
-            <v-col cols="12" md="4">
-              <v-text-field v-model.number="newQuantity" label="Cantidad" type="number"
-                :rules="[rules.required, rules.isNumber]" outlined required></v-text-field>
-            </v-col>
+        <!-- Campo para cantidad (numérico) -->
+        <v-col cols="12" md="4">
+          <v-text-field v-model.number="newQuantity" label="Cantidad" type="number"
+            :rules="[rules.required, rules.isNumber]" outlined required></v-text-field>
+        </v-col>
 
-            <!-- Campo para regla de prioridad (list box) -->
-            <v-col cols="12" md="4">
-              <v-select v-model="selectedPriority" :items="priorityOptions" item-title="typePrioritaryName"
-                item-value="idTypePrioritary" label="Seleccione Prioridad"
-                :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
-            </v-col>
+        <!-- Campo para regla de prioridad (list box) -->
+        <v-col cols="12" md="4">
+          <v-select v-model="selectedPriority" :items="priorityOptions" item-title="typePrioritaryName"
+            item-value="idTypePrioritary" label="Seleccione Prioridad"
+            :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
+        </v-col>
 
-            <!-- Campo para tipo de empaque (list box) -->
-            <v-col cols="12" md="4">
-              <v-select v-model="selectedStock" :items="stockOptions" item-title="typeStockName"
-                item-value="idTypeStock" label="Seleccione Tipo de Stock"
-                :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
-            </v-col>
+        <!-- Campo para tipo de empaque (list box) -->
+        <v-col cols="12" md="4">
+          <v-select v-model="selectedStock" :items="stockOptions" item-title="typeStockName" item-value="idTypeStock"
+            label="Seleccione Tipo de Stock" :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
+        </v-col>
 
-            <!-- Campo para fecha de compra -->
-            <v-col cols="12" md="4">
-              <v-text-field v-model="newPurchaseDate" label="Fecha de compra" type="date" :rules="[rules.required]"
-                outlined required></v-text-field>
-            </v-col>
+        <!-- Campo para fecha de compra -->
+        <v-col cols="12" md="4">
+          <v-text-field v-model="newPurchaseDate" label="Fecha de compra" type="date" :rules="[rules.required]" outlined
+            required></v-text-field>
+        </v-col>
 
-            <!-- Campo para fecha de expiración -->
-            <v-col cols="12" md="4">
-              <v-text-field v-model="newExpirationDate" label="Fecha de expiración" type="date"
-                :rules="[rules.required]" outlined required></v-text-field>
-            </v-col>
+        <!-- Campo para fecha de expiración -->
+        <v-col cols="12" md="4">
+          <v-text-field v-model="newExpirationDate" label="Fecha de expiración" type="date" :rules="[rules.required]"
+            outlined required></v-text-field>
+        </v-col>
 
-            <v-col cols="12" class="d-flex align-center">
-              <v-btn :disabled="!isUpdateFormValid" color="success" type="submit">
-                Actualizar
-              </v-btn>
-              <v-btn color="secondary" @click="clearForm" class="ml-2">
-                Cancelar
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card-text>
-    </v-card>
+        <v-col cols="12" class="d-flex align-center">
+          <v-btn :disabled="!isUpdateFormValid" color="success" type="submit">
+            Actualizar
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-form>
   </v-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onBeforeMount } from 'vue';
+import { defineComponent, ref, onBeforeMount, defineEmits } from 'vue';
 import ApiService from '@/services/apiServices';
 
 export default defineComponent({
   name: 'UpdateArticleForm',
-  setup() {
+  setup(props, { emit }) {
     const searchId = ref<number | null>(null);
     const newArticleName = ref('');
     const newQuantity = ref<number | null>(null);
@@ -164,21 +155,11 @@ export default defineComponent({
       },
     ]);
 
-    // Encabezados de la tabla
-    const tableHeaders = [
-      { text: 'ID', value: 'id' },
-      { text: 'Nombre del Artículo', value: 'articleName' },
-      { text: 'Cantidad', value: 'quantity' },
-      { text: 'Regla de Prioridad', value: 'priorityRule' },
-      { text: 'Tipo de Empaque', value: 'packagingType' },
-      { text: 'Fecha de Compra', value: 'purchaseDate' },
-      { text: 'Fecha de Expiración', value: 'expirationDate' },
-    ];
-
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
       required: (value: any) => !!value || 'Campo requerido',
       isNumber: (value: number | null) => !isNaN(Number(value)) || 'Debe ser un número',
+      nonNegative: (value: number | null) => (value !== null && value >= 1) || 'El ID no puede ser negativo',
     };
 
     // Función para buscar el elemento por ID
@@ -206,26 +187,16 @@ export default defineComponent({
         selectedItem.value.purchaseDate = newPurchaseDate.value;
         selectedItem.value.expirationDate = newExpirationDate.value;
         console.log(`Elemento con ID ${selectedItem.value.id} actualizado.`);
-        clearForm();
+        emit('closeDialog');
       }
     };
 
-    // Función para limpiar el formulario de actualización
-    const clearForm = () => {
-      searchId.value = null;
-      newArticleName.value = '';
-      newQuantity.value = null;
-      newPriorityRule.value = null;
-      newPackagingType.value = null;
-      newPurchaseDate.value = null;
-      newExpirationDate.value = null;
-      selectedItem.value = null;
-    };
-
     // Función para limpiar solo la búsqueda
-    const clearSearch = () => {
+    const cancelar = () => {
       searchId.value = null;
       selectedItem.value = null;
+      console.log('Formulario cancelado');
+      emit('closeDialog');
     };
 
     // Variable para almacenar la opción seleccionada
@@ -248,13 +219,11 @@ export default defineComponent({
       isFormValid,
       isUpdateFormValid,
       rules,
-      tableHeaders,
       items,
       selectedItem,
       searchById,
       updateFields,
-      clearForm,
-      clearSearch,
+      cancelar,
 
       stockOptions,
       selectedStock,
