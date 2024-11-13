@@ -11,7 +11,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, defineEmits } from 'vue';
+import { defineComponent, ref, defineEmits, toRaw } from 'vue';
+import apiServices from '@/services/apiServices';
 
 export default defineComponent({
     name: 'CuestionarioEmpaque',
@@ -19,19 +20,38 @@ export default defineComponent({
         const valid = ref(false);
         const formCrear = ref();
         const nombreEmpaque = ref<string>('');
+            interface empMain { //estructura de la información de la tabla
+                IdTypeStock: number;
+                TypeStockName: string;
+                active: boolean;
+            }
+            interface empApiMain { //estructura del objeto que se trae del api
+            success: boolean;
+            data: empMain;
+            }
+        const responseAPIEmpaques = ref<empApiMain>(); //INSTANCIA NUEVA DE RESPUETA API
+        
         const nombreEmpaqueRules = [
             (v: string) => !!v || 'El nombre es obligatorio',
             (v: string) => v.length <= 50 || 'El nombre debe tener menos de 50 caracteres',
         ];
 
-        const submitForm = () => {
+        const submitForm = async () => {
            formCrear.value?.validate();
+           console.log(nombreEmpaque.value);
             if (valid.value)
             {
-                // Lógica para manejar la información del cuestionario
-                console.log('Nombre del empaque:', nombreEmpaque.value);
-                // Aquí puedes hacer cualquier otra acción, como enviar los datos a una API.
-                emit('closeDialog');
+                // Define el objeto conforme a la estructura de la interfaz empMain
+                const nuevoEmpaque: empMain = {
+                    IdTypeStock: 0,                // o el valor deseado
+                    TypeStockName: nombreEmpaque.value, // reemplaza con el nombre real del empaque
+                    active: true                    // o el estado deseado
+                };
+                responseAPIEmpaques.value = await apiServices.postData('Empaques/CrearEmp/nombreEmpaque/',nuevoEmpaque);
+                console.log(responseAPIEmpaques);
+                if(responseAPIEmpaques.value?.success){
+                    emit('closeDialog')
+                }
             }
         };
 

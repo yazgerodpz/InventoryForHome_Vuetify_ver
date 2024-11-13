@@ -28,8 +28,7 @@
 <script lang="ts">
 import { defineComponent, ref, onBeforeMount, defineEmits } from 'vue';
 import ApiService from '@/services/apiServices';
-
-
+import apiServices from '@/services/apiServices';
 
 export default defineComponent({
   name: 'CuestionarioNuevoArticulo',
@@ -37,11 +36,29 @@ export default defineComponent({
     const valid = ref(false);
     const formCrear = ref();
     const nombreArticulo = ref<string>('');
-    const cantidad = ref<number | null>(null);
-    const reglaPrioridad = ref<number | null>(null);
-    const tipoEmpaque = ref<number | null>(null);
-    const fechaCompra = ref<Date | null>(null);
-    const fechaExpiracion = ref<Date | null>(null);
+    const cantidad = ref<number>(1);
+    // const reglaPrioridad = ref<number | null>(null);
+    // const tipoEmpaque = ref<number | null>(null);
+    const fechaCompra = ref<Date>(new Date());
+    const fechaExpiracion = ref<Date>(new Date());
+
+    interface DataItemApi {
+      IdItem: number;
+      ItemName: string;
+      Stock: number;
+      IdTypePrioritary: number;
+      IdTypeStock: number;
+      PurchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
+      ExpirationDate: Date; // Lo mismo aquí
+      Active: boolean
+    }
+
+    interface ResponseApi { //OBJETO DE RESPUESTA API
+      success: boolean;
+      data: DataItemApi;
+    }
+    
+    const responseAPIInventario = ref<ResponseApi>(); //INSTANCIA NUEVA DE RESPUETA API
 
     interface empMain { //estructura de la información de la tabla
       IdTypeStock: number;
@@ -105,35 +122,45 @@ export default defineComponent({
       (v: string | null) => !!v || 'La fecha es obligatoria',
     ];
 
-    const submitForm = () => {
+    const submitForm = async () => {
       formCrear.value?.validate();
       if (valid.value) {
-        console.log('Nombre del artículo:', nombreArticulo.value);
-        console.log('Cantidad:', cantidad.value);
-        console.log('Regla de Prioridad:', reglaPrioridad.value);
-        console.log('Tipo de Empaque:', tipoEmpaque.value);
-        console.log('Fecha de compra:', fechaCompra.value);
-        console.log('Fecha de expiración:', fechaExpiracion.value);
+        const nuevoItem: DataItemApi ={
+            IdItem: 0,
+            ItemName: nombreArticulo.value,
+            Stock: cantidad.value,
+            IdTypePrioritary: selectedPriority.value,
+            IdTypeStock: selectedStock.value,
+            PurchesDate: fechaCompra.value, // Puedes usar string si prefieres manejarlo como una cadena
+            ExpirationDate: fechaExpiracion.value, // Lo mismo aquí
+            Active: true
+        };
+        console.log(nuevoItem);
+        responseAPIInventario.value = await apiServices.postData('Inventario/CrearInv/nuevoItem/', nuevoItem)
+        console.log(responseAPIInventario);
+        if(responseAPIInventario.value?.success){
+          
+          emit('closeDialog');
+        }
         // Aquí puedes enviar los datos a una API o realizar otra acción.
-        emit('closeDialog');
       }
     };
 
     const cancelForm = () => {
       nombreArticulo.value = '';
-      cantidad.value = null;
-      reglaPrioridad.value = null;
-      tipoEmpaque.value = null;
-      fechaCompra.value = null;
-      fechaExpiracion.value = null;
+      cantidad.value = 1;
+      selectedStock.value = 1;
+      selectedPriority.value = 1;
+      fechaCompra.value = new Date();
+      fechaExpiracion.value = new Date();
       valid.value = false;
       console.log('Formulario cancelado');
       emit('closeDialog');
     };
 
     // Variable para almacenar la opción seleccionada
-    const selectedPriority = ref<number | null>(null);
-    const selectedStock = ref<number | null>(null);
+    const selectedPriority = ref<number >(0);
+    const selectedStock = ref<number >(0);
 
     // Ejecutar getCatalogos antes de que el componente se monte
     onBeforeMount(() => {
@@ -145,8 +172,8 @@ export default defineComponent({
       valid,
       nombreArticulo,
       cantidad,
-      reglaPrioridad,
-      tipoEmpaque,
+      // reglaPrioridad,
+      // tipoEmpaque,
       fechaCompra,
       fechaExpiracion,
       nombreArticuloRules,

@@ -116,8 +116,9 @@ function openDialogEliminar()
     dialog.value = true;
 };
 
-function  closeDialog() 
+async function  closeDialog() 
 {
+      await getPrioridades();
       dialog.value = false;
 };
 

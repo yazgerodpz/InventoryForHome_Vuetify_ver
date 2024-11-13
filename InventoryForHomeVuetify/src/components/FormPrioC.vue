@@ -12,6 +12,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, defineEmits } from 'vue';
+import apiServices from '@/services/apiServices';
 
 export default defineComponent({
   name: 'CuestionarioNuevaRegla',
@@ -20,6 +21,19 @@ export default defineComponent({
     const formCrear = ref();
     const nuevaRegla = ref<string>('');
     const descripcion = ref<string>('');
+    interface prioMain {
+      IdTypePrioritary: number;
+      TypePrioritaryName: string;
+      _Description: string;
+      Active: boolean;
+    }
+
+    interface prioApiMain { //estructura del objeto que se trae del api
+      success: boolean;
+      data: prioMain;
+    }
+
+    const responseAPIPrioridad = ref<prioApiMain>(); //INSTANCIA NUEVA DE RESPUETA API
 
     const reglaRules = [
       (v: string) => !!v || 'La regla de prioridad es obligatoria',
@@ -31,13 +45,27 @@ export default defineComponent({
       (v: string) => v.length <= 200 || 'La descripción debe tener menos de 200 caracteres',
     ];
 
-    const submitForm = () => {
+    console.log(nuevaRegla.value, descripcion.value)
+    const submitForm = async () => {
       formCrear.value?.validate();
-      if (valid.value) {
-        console.log('Nueva regla de prioridad:', nuevaRegla.value);
-        console.log('Descripción:', descripcion.value);
+      console.log(nuevaRegla.value, descripcion.value)
+      if (valid.value)
+      {
+        const nuevoReglaPriority: prioMain = {
+            IdTypePrioritary: 0,
+            TypePrioritaryName: nuevaRegla.value,
+            _Description: descripcion.value,
+            Active: true
+        };
+        console.log(nuevoReglaPriority);
+        responseAPIPrioridad.value = await apiServices.postData('Prioridades/CrearPrios/nuevoReglaPrio/',nuevoReglaPriority);
+        console.log(responseAPIPrioridad);
+        if(responseAPIPrioridad.value?.success){
+          emit('closeDialog');
+
+        }
+        // console.log('Descripción:', descripcion.value);
         // Aquí puedes enviar los datos a una API o realizar otra acción.
-        emit('closeDialog');
       }
     };
 

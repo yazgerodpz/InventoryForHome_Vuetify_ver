@@ -29,7 +29,7 @@
         </v-dialog>
     </v-container>
     <v-container>
-        <v-data-table :headers="headers" :items="mainEmp" :items-per-page="10" class="elevation-1">
+        <v-data-table :headers="headers" :items="mainEmp" :items-per-page="5" class="elevation-1">
             <template #item.active="{ item }">
                 <v-icon v-if="item.active" color="green">mdi-check-circle</v-icon>
                 <v-icon v-else color="red">mdi-close-circle</v-icon>
@@ -118,9 +118,10 @@ function openDialogEliminar()
     dialog.value = true;
 };
 
-function  closeDialog() 
+async function  closeDialog() 
 {
-      dialog.value = false;
+    await getEmpaques();
+    dialog.value = false;
 };
 
 

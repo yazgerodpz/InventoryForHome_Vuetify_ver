@@ -117,11 +117,11 @@ export default defineComponent({
 
     const getCatalogos = async () => {
       try {
-        responseAPIEmpaques.value = await ApiService.getData<empApiMain>('Empaques/ReadEmps');
+        responseAPIEmpaques.value = await ApiService.getData<empApiMain>('Empaques/ReadEmps',"");
         // console.log(responseAPIEmpaques.value);
         stockOptions.value = responseAPIEmpaques.value.data;
 
-        responseAPIPrioridades.value = await ApiService.getData<prioApiMain>('Prioridades/ReadPrios');
+        responseAPIPrioridades.value = await ApiService.getData<prioApiMain>('Prioridades/ReadPrios',"");
         // console.log(responseAPIPrioridades.value);
         priorityOptions.value = responseAPIPrioridades.value.data;
 

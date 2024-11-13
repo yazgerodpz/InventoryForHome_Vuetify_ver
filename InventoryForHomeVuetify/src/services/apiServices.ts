@@ -14,7 +14,7 @@ class ApiService
         })
     }
 
-    public async getData<T>(endpoint:string ): Promise<T>
+    public async getData<T>(endpoint: string, p0: string): Promise<T>
     {
         try
         {
@@ -28,11 +28,11 @@ class ApiService
         }
     }
 
-    public async postData<T>(endpoint: string, data: T): Promise<T> {
+    public async postData<T>(endpoint:string, payload: any): Promise<T> {
         try {
-            const response = await this.axiosInstance.post<T>(endpoint, data);
+            const response = await this.axiosInstance.post<T>(endpoint, payload);
             return response.data;
-        } catch (error) {
+        } catch (error:any) {
             console.error('ERROR AL ENVIAR DATOS A', endpoint, error);
             throw error;
         }
