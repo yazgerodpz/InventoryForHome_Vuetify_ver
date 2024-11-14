@@ -23,38 +23,38 @@
       <v-row>
         <!-- Campo para nombre de artículo -->
         <v-col cols="12" md="4">
-          <v-text-field v-model="newArticleName" label="Nombre del artículo" :rules="[rules.required]" outlined
+          <v-text-field v-model="selectedItem.ItemName" label="Nombre del artículo" :rules="[rules.required]" outlined
             required></v-text-field>
         </v-col>
 
         <!-- Campo para cantidad (numérico) -->
         <v-col cols="12" md="4">
-          <v-text-field v-model.number="newQuantity" label="Cantidad" type="number"
+          <v-text-field v-model.number="selectedItem.Stock" label="Cantidad" type="number"
             :rules="[rules.required, rules.isNumber]" outlined required></v-text-field>
         </v-col>
 
         <!-- Campo para regla de prioridad (list box) -->
         <v-col cols="12" md="4">
-          <v-select v-model="selectedPriority" :items="priorityOptions" item-title="typePrioritaryName"
+          <v-select v-model="selectedItem.selectedPriority" :items="selectedItem.priorityOptions" item-title="typePrioritaryName"
             item-value="idTypePrioritary" label="Seleccione Prioridad"
             :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
         </v-col>
 
         <!-- Campo para tipo de empaque (list box) -->
         <v-col cols="12" md="4">
-          <v-select v-model="selectedStock" :items="stockOptions" item-title="typeStockName" item-value="idTypeStock"
+          <v-select v-model="selectedItem.selectedStock" :items="selectedItem.stockOptions" item-title="typeStockName" item-value="idTypeStock"
             label="Seleccione Tipo de Stock" :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
         </v-col>
 
         <!-- Campo para fecha de compra -->
         <v-col cols="12" md="4">
-          <v-text-field v-model="newPurchaseDate" label="Fecha de compra" type="date" :rules="[rules.required]" outlined
+          <v-text-field v-model="selectedItem.PurchesDate" label="Fecha de compra" type="date" :rules="[rules.required]" outlined
             required></v-text-field>
         </v-col>
 
         <!-- Campo para fecha de expiración -->
         <v-col cols="12" md="4">
-          <v-text-field v-model="newExpirationDate" label="Fecha de expiración" type="date" :rules="[rules.required]"
+          <v-text-field v-model="selectedItem.ExpirationDate" label="Fecha de expiración" type="date" :rules="[rules.required]"
             outlined required></v-text-field>
         </v-col>
 
@@ -71,20 +71,21 @@
 <script lang="ts">
 import { defineComponent, ref, onBeforeMount, defineEmits } from 'vue';
 import ApiService from '@/services/apiServices';
+import apiServices from '@/services/apiServices';
 
 export default defineComponent({
   name: 'UpdateArticleForm',
   setup(props, { emit }) {
     const searchId = ref<number | null>(null);
-    const newArticleName = ref('');
-    const newQuantity = ref<number | null>(null);
-    const newPriorityRule = ref<number | null>(null);
-    const newPackagingType = ref<number | null>(null);
-    const newPurchaseDate = ref<Date | null>(null);
-    const newExpirationDate = ref<Date | null>(null);
+    // const newArticleName = ref('');
+    // const newQuantity = ref<number | null>(null);
+    // const newPriorityRule = ref<number | null>(null);
+    // const newPackagingType = ref<number | null>(null);
+    // const newPurchaseDate = ref<Date | null>(null);
+    // const newExpirationDate = ref<Date | null>(null);
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
-    const selectedItem = ref<any>(null); // Elemento encontrado en la búsqueda
+    let selectedItem = ref<DataItemApi>(); // Elemento encontrado en la búsqueda
 
     interface empMain { //estructura de la información de la tabla
       IdTypeStock: number;
@@ -134,44 +135,65 @@ export default defineComponent({
     }
 
     // Ejemplo de datos de la tabla
-    const items = ref([
-      {
-        id: 1,
-        articleName: 'Empaque 1',
-        quantity: 10,
-        priorityRule: 'Alta',
-        packagingType: 'Caja',
-        purchaseDate: '2024-01-01',
-        expirationDate: '2024-12-31',
-      },
-      {
-        id: 2,
-        articleName: 'Empaque 2',
-        quantity: 5,
-        priorityRule: 'Media',
-        packagingType: 'Bolsa',
-        purchaseDate: '2024-02-01',
-        expirationDate: '2024-11-30',
-      },
-    ]);
+    // const items = ref([
+    //   {
+    //     id: 1,
+    //     articleName: 'Empaque 1',
+    //     quantity: 10,
+    //     priorityRule: 'Alta',
+    //     packagingType: 'Caja',
+    //     purchaseDate: '2024-01-01',
+    //     expirationDate: '2024-12-31',
+    //   },
+    //   {
+    //     id: 2,
+    //     articleName: 'Empaque 2',
+    //     quantity: 5,
+    //     priorityRule: 'Media',
+    //     packagingType: 'Bolsa',
+    //     purchaseDate: '2024-02-01',
+    //     expirationDate: '2024-11-30',
+    //   },
+    // ]);
 
+    
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
       required: (value: any) => !!value || 'Campo requerido',
       isNumber: (value: number | null) => !isNaN(Number(value)) || 'Debe ser un número',
       nonNegative: (value: number | null) => (value !== null && value >= 1) || 'El ID no puede ser negativo',
     };
+    
+    interface DataItemApi {
+      IdItem: number;
+      ItemName: string;
+      Stock: number;
+      IdTypePrioritary: number;
+      IdTypeStock: number;
+      PurchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
+      ExpirationDate: Date; // Lo mismo aquí
+      Active: boolean
+    }
+
+    interface ResponseApi { //OBJETO DE RESPUESTA API
+      success: boolean;
+      data: DataItemApi;
+    }
+
+    const responseAPIInventario = ref<ResponseApi>(); //INSTANCIA NUEVA DE RESPUETA API
 
     // Función para buscar el elemento por ID
-    const searchById = () => {
-      selectedItem.value = items.value.find((item) => item.id === searchId.value);
+    const searchById = async () => {
+      responseAPIInventario.value = await apiServices.getData(`Inventario/ReadInvById/${searchId.value}`, '');
+      console.log(responseAPIInventario);
+      // selectedItem.value = items.value.find((item) => item.id === searchId.value);
       if (selectedItem.value) {
-        newArticleName.value = selectedItem.value.articleName;
-        newQuantity.value = selectedItem.value.quantity;
-        newPriorityRule.value = selectedItem.value.priorityRule;
-        newPackagingType.value = selectedItem.value.packagingType;
-        newPurchaseDate.value = selectedItem.value.purchaseDate;
-        newExpirationDate.value = selectedItem.value.expirationDate;
+        // newArticleName.value = selectedItem.value.articleName;
+        // newQuantity.value = selectedItem.value.quantity;
+        // newPriorityRule.value = selectedItem.value.priorityRule;
+        // newPackagingType.value = selectedItem.value.packagingType;
+        // newPurchaseDate.value = selectedItem.value.purchaseDate;
+        // newExpirationDate.value = selectedItem.value.expirationDate;
       } else {
         console.log(`Elemento con ID ${searchId.value} no encontrado`);
       }
@@ -180,13 +202,13 @@ export default defineComponent({
     // Función para actualizar los campos del artículo
     const updateFields = () => {
       if (selectedItem.value) {
-        selectedItem.value.articleName = newArticleName.value;
-        selectedItem.value.quantity = newQuantity.value;
-        selectedItem.value.priorityRule = newPriorityRule.value;
-        selectedItem.value.packagingType = newPackagingType.value;
-        selectedItem.value.purchaseDate = newPurchaseDate.value;
-        selectedItem.value.expirationDate = newExpirationDate.value;
-        console.log(`Elemento con ID ${selectedItem.value.id} actualizado.`);
+        // selectedItem.value.articleName = newArticleName.value;
+        // selectedItem.value.quantity = newQuantity.value;
+        // selectedItem.value.priorityRule = newPriorityRule.value;
+        // selectedItem.value.packagingType = newPackagingType.value;
+        // selectedItem.value.purchaseDate = newPurchaseDate.value;
+        // selectedItem.value.expirationDate = newExpirationDate.value;
+        // console.log(`Elemento con ID ${selectedItem.value.id} actualizado.`);
         emit('closeDialog');
       }
     };
@@ -194,7 +216,7 @@ export default defineComponent({
     // Función para limpiar solo la búsqueda
     const cancelar = () => {
       searchId.value = null;
-      selectedItem.value = null;
+      selectedItem = ref<DataItemApi>();
       console.log('Formulario cancelado');
       emit('closeDialog');
     };
@@ -210,16 +232,16 @@ export default defineComponent({
 
     return {
       searchId,
-      newArticleName,
-      newQuantity,
-      newPriorityRule,
-      newPackagingType,
-      newPurchaseDate,
-      newExpirationDate,
+      // newArticleName,
+      // newQuantity,
+      // newPriorityRule,
+      // newPackagingType,
+      // newPurchaseDate,
+      // newExpirationDate,
       isFormValid,
       isUpdateFormValid,
       rules,
-      items,
+      // items,
       selectedItem,
       searchById,
       updateFields,

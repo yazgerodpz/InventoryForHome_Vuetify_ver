@@ -14,7 +14,7 @@ class ApiService
         })
     }
 
-    public async getData<T>(endpoint: string, p0: string): Promise<T>
+    public async getData<T>(endpoint: string): Promise<T>
     {
         try
         {

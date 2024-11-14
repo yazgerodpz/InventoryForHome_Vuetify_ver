@@ -21,8 +21,8 @@ export default defineComponent({
         const formCrear = ref();
         const nombreEmpaque = ref<string>('');
             interface empMain { //estructura de la información de la tabla
-                IdTypeStock: number;
-                TypeStockName: string;
+                idTypeStock: number;
+                typeStockName: string;
                 active: boolean;
             }
             interface empApiMain { //estructura del objeto que se trae del api
@@ -43,8 +43,8 @@ export default defineComponent({
             {
                 // Define el objeto conforme a la estructura de la interfaz empMain
                 const nuevoEmpaque: empMain = {
-                    IdTypeStock: 0,                // o el valor deseado
-                    TypeStockName: nombreEmpaque.value, // reemplaza con el nombre real del empaque
+                    idTypeStock: 0,                // o el valor deseado
+                    typeStockName: nombreEmpaque.value, // reemplaza con el nombre real del empaque
                     active: true                    // o el estado deseado
                 };
                 responseAPIEmpaques.value = await apiServices.postData('Empaques/CrearEmp/nombreEmpaque/',nuevoEmpaque);

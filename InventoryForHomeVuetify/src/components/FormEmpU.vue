@@ -17,28 +17,34 @@
         </v-col>
       </v-row>
     </v-form>
-    <!-- Formulario para actualizar el nombre si el elemento es encontrado -->
-    <v-form v-if="selectedItem" v-model="isUpdateFormValid" @submit.prevent="updateName">
-      <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field 
-            v-model="selectedItem.TypeStockName" 
-            label="Nuevo nombre del empaque" 
-            :rules="[rules.required]" outlined
-            required></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4" class="d-flex align-center">
-          <v-btn :disabled="!isUpdateFormValid" color="success" type="submit">
+    
+    <v-form v-if="selectedItem" v-model="isUpdateFormValid" >
+    <v-text-field
+      v-model="selectedItem.typeStockName"
+      label="Tipo de Stock"
+      :rules="[rules.required]"
+      required
+    ></v-text-field>
+
+    <v-switch
+  v-model="selectedItem.active"
+  label=""
+  :label-checked="'Sí'"
+  :label-unchecked="'No'"
+  color="green"
+  off-color="red"
+  thumb-color="white"
+></v-switch>
+    <v-btn :disabled="!isUpdateFormValid" color="success"  @click="updateName">
             Actualizar
           </v-btn>
-        </v-col>
-      </v-row>
-    </v-form>
+  </v-form>
+
   </v-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, defineEmits  } from 'vue';
+import { defineComponent, ref, defineEmits } from 'vue';
 import apiServices from '@/services/apiServices';
 
 export default defineComponent({
@@ -48,8 +54,7 @@ export default defineComponent({
     // const newName = ref<string>('');
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
-    let selectedItem = ref<empMain>(); // Elemento encontrado en la búsqueda
-
+    const selectedItem = ref<empMain | null >(null);
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
       required: (value: string | number | null) => !!value || 'Campo requerido',
@@ -59,8 +64,8 @@ export default defineComponent({
 
 
     interface empMain { //estructura de la información de la tabla
-        IdTypeStock: number;
-        TypeStockName: string;
+        idTypeStock: number;
+        typeStockName: string;
         active: boolean;
     }
     interface empApiMain { //estructura del objeto que se trae del api
@@ -73,35 +78,37 @@ export default defineComponent({
     // Función para buscar el elemento por ID
     const searchById = async () => {
       //LAMADA DE API Y ASIGNACION DE VALORES:
-      responseAPIEmpaques.value = await apiServices.getData(`Empaques/ReadEmpById/${searchId.value}`,'');
-      console.log(responseAPIEmpaques);
-        if(responseAPIEmpaques.value?.success){
-          //  selectedItem.value = responseAPIEmpaques.value.data;
-          // selectedItem.value =
-          // {
-          //     IdTypeStock: responseAPIEmpaques.value.data.IdTypeStock,                // o el valor deseado
-          //       TypeStockName: responseAPIEmpaques.value.data.TypeStockName, // reemplaza con el nombre real del empaque
-          //       active: responseAPIEmpaques.value.data.active
-          // };
-          //  newName.value = responseAPIEmpaques.value.data.TypeStockName;
-           console.log(selectedItem.value);
+      responseAPIEmpaques.value = await apiServices.getData(`Empaques/ReadEmpById/${searchId.value}`);
+       // Acceder al valor del ref
+       const response = responseAPIEmpaques.value; // Acceder a .value del ref
+       console.log(response?.data)
+     
+        if(response?.success){
+          selectedItem.value = response.data;
+          console.log(selectedItem);
+
         }
     };
-
+    
     // Función para actualizar el nombre del empaque
-    const updateName = () => {
-      if (selectedItem.value) {
-        // selectedItem.value.TypeStockName = newName.value;
-        // console.log(`Elemento con ID ${selectedItem.value.IdTypeStock} actualizado a: ${newName.value}`);
-        // Aquí puedes hacer cualquier otra acción, como enviar los datos a una API.
-        emit('closeDialog');
+    const updateName = async () => {
+      
+      if (isUpdateFormValid.value) {
+        console.log(selectedItem.value);
+        //Enviar a Post de Update
+        responseAPIEmpaques.value = await apiServices.postData('Empaques/EditEmp/nuevoItem',selectedItem.value);
+                console.log(responseAPIEmpaques);
+                if(responseAPIEmpaques.value?.success){
+                    emit('closeDialog')
+                }
+
       }
     };
 
     // Función para limpiar solo la búsqueda
     const cancelar = () => {
       searchId.value = null;
-      selectedItem = ref<empMain>();
+      // selectedItem = ref<empMain>();
       console.log('Formulario cancelado');
       emit('closeDialog');
     };

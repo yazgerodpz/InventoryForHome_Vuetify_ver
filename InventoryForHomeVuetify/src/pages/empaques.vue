@@ -47,8 +47,8 @@ import _formEmpD from '@/components/FormEmpD.vue';
 
 
 interface empMain { //estructura de la información de la tabla
-    IdTypeStock: number;
-    TypeStockName: string;
+    idTypeStock: number;
+    typeStockName: string;
     active: boolean;
 }
 
@@ -78,13 +78,13 @@ const getEmpaques = async () =>
     }
 }
 
-onBeforeMount(getEmpaques)
+onBeforeMount(getEmpaques);
 
 // Definimos las cabeceras de la tabla
 const headers = ref([
     { text: 'ID', value: 'idTypeStock'},
-    { text: 'Tipo de empaques', value: 'typeStockName'}
-    // { text: 'activo', value: 'active'}
+    { text: 'Tipo de empaques', value: 'typeStockName'},
+    { text: 'activo', value: 'active'}
 ]);
 
 
