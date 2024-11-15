@@ -43,14 +43,14 @@ export default defineComponent({
     const fechaExpiracion = ref<Date>(new Date());
 
     interface DataItemApi {
-      IdItem: number;
-      ItemName: string;
-      Stock: number;
-      IdTypePrioritary: number;
-      IdTypeStock: number;
-      PurchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
-      ExpirationDate: Date; // Lo mismo aquí
-      Active: boolean
+      idItem: number;
+      itemName: string;
+      stock: number;
+      idTypePrioritary: number;
+      idTypeStock: number;
+      purchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
+      expirationDate: Date; // Lo mismo aquí
+      active: boolean
     }
 
     interface ResponseApi { //OBJETO DE RESPUESTA API
@@ -61,8 +61,8 @@ export default defineComponent({
     const responseAPIInventario = ref<ResponseApi>(); //INSTANCIA NUEVA DE RESPUETA API
 
     interface empMain { //estructura de la información de la tabla
-      IdTypeStock: number;
-      TypeStockName: string;
+      idTypeStock: number;
+      typeStockName: string;
       active: boolean;
     }
 
@@ -75,9 +75,9 @@ export default defineComponent({
     const stockOptions = ref<empMain[]>([]); //LA LISTA DE OBJETOS QUE VOY A MONTAR EN MIS INTERFACES
 
     interface prioMain {
-      IdTypePrioritary: number;
-      TypePrioritaryName: string;
-      Description: string;
+      idTypePrioritary: number;
+      typePrioritaryName: string;
+      _Description: string;
       active: boolean;
     }
 
@@ -126,14 +126,14 @@ export default defineComponent({
       formCrear.value?.validate();
       if (valid.value) {
         const nuevoItem: DataItemApi ={
-            IdItem: 0,
-            ItemName: nombreArticulo.value,
-            Stock: cantidad.value,
-            IdTypePrioritary: selectedPriority.value,
-            IdTypeStock: selectedStock.value,
-            PurchesDate: fechaCompra.value, // Puedes usar string si prefieres manejarlo como una cadena
-            ExpirationDate: fechaExpiracion.value, // Lo mismo aquí
-            Active: true
+            idItem: 0,
+            itemName: nombreArticulo.value,
+            stock: cantidad.value,
+            idTypePrioritary: selectedPriority.value,
+            idTypeStock: selectedStock.value,
+            purchesDate: fechaCompra.value, // Puedes usar string si prefieres manejarlo como una cadena
+            expirationDate: fechaExpiracion.value, // Lo mismo aquí
+            active: true
         };
         console.log(nuevoItem);
         responseAPIInventario.value = await apiServices.postData('Inventario/CrearInv/nuevoItem/', nuevoItem)
@@ -172,8 +172,6 @@ export default defineComponent({
       valid,
       nombreArticulo,
       cantidad,
-      // reglaPrioridad,
-      // tipoEmpaque,
       fechaCompra,
       fechaExpiracion,
       nombreArticuloRules,

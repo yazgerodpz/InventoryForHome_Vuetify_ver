@@ -49,9 +49,9 @@ import _formPrioU from '@/components/FormPrioU.vue';
 import _formPrioD from '@/components/FormPrioD.vue';
 
 interface prioMain {
-  IdTypePrioritary: number;
-  TypePrioritaryName: string;
-  Description: string;
+  idTypePrioritary: number;
+  typePrioritaryName: string;
+  _Description: string;
   active: boolean;
 }
 
@@ -84,7 +84,7 @@ const headers = [
   { text: 'ID', value: 'idTypePrioritary' },
   { text: 'Nombre', value: 'typePrioritaryName' },
   { text: 'Descripción', value: '_Description' },
-  // { text: 'Activo', value: 'active' },
+  { text: 'Activo', value: 'active' },
 ];
 
 function handleButtonClick(buttonName: string) {

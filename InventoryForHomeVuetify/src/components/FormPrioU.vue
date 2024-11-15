@@ -20,22 +20,22 @@
     </v-form>
 
     <!-- Formulario para actualizar regla de prioridad y descripción si el elemento es encontrado -->
-    <v-form v-if="selectedItem" v-model="isUpdateFormValid" @submit.prevent="updateFields">
-      <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="selectedItem.TypePrioritaryName" label="Nueva regla de prioridad" :rules="[rules.required]" outlined
-            required></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="selectedItem.Description" label="Nueva descripción" :rules="[rules.required]" outlined
-            required></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4" class="d-flex align-center">
-          <v-btn :disabled="!isUpdateFormValid" color="success" type="submit">
-            Actualizar
-          </v-btn>
-        </v-col>
-      </v-row>
+    <v-form v-if="selectedItem" v-model="isUpdateFormValid">
+      <!-- Campo para el nombre de la prioridad -->
+      <v-text-field v-model="selectedItem.typePrioritaryName" label="Nombre de Prioridad" :rules="[rules.required]"
+        required></v-text-field>
+
+      <!-- Campo para la descripción -->
+      <v-textarea v-model="selectedItem._Description" label="Descripción" :rules="[rules.required]"
+        required></v-textarea>
+
+      <v-switch v-model="selectedItem.active" label="" :label-checked="'Sí'" :label-unchecked="'No'" color="green"
+        off-color="red" thumb-color="white"></v-switch>
+
+      <v-btn :disabled="!isUpdateFormValid" color="success" @click="updateFields">
+        Actualizar
+      </v-btn>
+      <!-- </v-col> -->
     </v-form>
   </v-container>
 </template>
@@ -48,19 +48,9 @@ export default defineComponent({
   name: 'UpdateForm',
   setup(props, { emit }) {
     const searchId = ref<number | null>(null);
-    // const newPriorityRule = ref('');
-    // const newDescription = ref('');
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
-    let selectedItem = ref<prioMain>(); // Elemento encontrado en la búsqueda
-
-
-    // Ejemplo de datos de la tabla
-    // const items = ref([
-    //   { id: 1, priorityRule: 'Alta', description: 'Empaque delicado' },
-    //   { id: 2, priorityRule: 'Media', description: 'Empaque estándar' },
-    //   { id: 3, priorityRule: 'Baja', description: 'Empaque sin prioridad' },
-    // ]);
+    const selectedItem = ref<prioMain | null>(null); // Elemento encontrado en la búsqueda
 
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
@@ -70,9 +60,9 @@ export default defineComponent({
     };
 
     interface prioMain {
-      IdTypePrioritary: number;
-      TypePrioritaryName: string;
-      Description: string;
+      idTypePrioritary: number;
+      typePrioritaryName: string;
+      _Description: string;
       active: boolean;
     }
 
@@ -87,29 +77,34 @@ export default defineComponent({
     const searchById = async () => {
       responseAPIPrioridad.value = await apiServices.getData(`Prioridades/ReadPriosById/${searchId.value}`);
       console.log(responseAPIPrioridad)
-      // selectedItem.value = items.value.find((item) => item.id === searchId.value);
-      if (responseAPIPrioridad.value?.success) {
-        // newPriorityRule.value = selectedItem.value.priorityRule;
-        // newDescription.value = selectedItem.value.description;
-      } else {
-        console.log(`Elemento con ID ${searchId.value} no encontrado`);
+      // Acceder al valor del ref
+      const response = responseAPIPrioridad.value; // Acceder a .value del ref
+      console.log(response?.data)
+
+      if (response?.success) {
+        selectedItem.value = response.data;
+        console.log(selectedItem);
       }
     };
 
     // Función para actualizar la regla de prioridad y descripción
-    const updateFields = () => {
-      if (selectedItem.value) {
-        // selectedItem.value.priorityRule = newPriorityRule.value;
-        // selectedItem.value.description = newDescription.value;
-        // console.log(`Elemento con ID ${selectedItem.value.id} actualizado.`);
-        emit('closeDialog');
+    const updateFields = async () => {
+      if (isUpdateFormValid.value) {
+        console.log(selectedItem.value);
+        //Enviar a Post de Update
+        responseAPIPrioridad.value = await apiServices.postData(`Prioridades/EditPrios/ActReglaPrio`, selectedItem.value);
+        console.log(responseAPIPrioridad);
+        if (responseAPIPrioridad.value?.success) {
+
+          emit('closeDialog');
+        }
       }
     };
 
     // Función para limpiar solo la búsqueda
     const cancelar = () => {
       searchId.value = null;
-      selectedItem = ref<prioMain>();
+      // selectedItem = ref<prioMain>();
       console.log('Formulario cancelado');
       emit('closeDialog');
     };

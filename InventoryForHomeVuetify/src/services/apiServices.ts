@@ -37,6 +37,20 @@ class ApiService
             throw error;
         }
     }
+
+    public async deleteData<T>(endpoint: string): Promise<T>
+    {
+        try
+        {
+            const response = await this.axiosInstance.delete<T>(endpoint);
+            return response.data;
+        }
+        catch(error)
+        {
+            console.error('ERROR AL elimianr datos',error);
+            throw error;
+        }
+    }
     
 }
 

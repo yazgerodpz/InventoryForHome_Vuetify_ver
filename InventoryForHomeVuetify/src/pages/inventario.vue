@@ -91,7 +91,8 @@ const headers = ref([
   { text: 'Prioridad', value: 'typePrioritaryName' },
   { text: 'Tipo de Stock', value: 'typeStockName' },
   { text: 'Fecha de Compra', value: 'purchesDate' },
-  { text: 'Fecha de Expiración', value: 'expirationDate' }
+  { text: 'Fecha de Expiración', value: 'expirationDate' },
+  { text: 'Activo', value: 'active' },
 ]);
 
 

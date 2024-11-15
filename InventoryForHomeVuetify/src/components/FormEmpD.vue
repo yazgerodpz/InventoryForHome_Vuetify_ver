@@ -10,7 +10,7 @@
         required
       ></v-text-field>
       <v-spacer></v-spacer>
-      <v-btn type="submit" color="primary" class="ma-2">Eliminar</v-btn>
+      <v-btn @click="deleteById" color="primary" class="ma-2">Eliminar</v-btn>
       <v-btn color="secondary" @click="cancelForm" class="ma-2">Cancelar</v-btn>
     </v-form>
   </v-container>
@@ -18,6 +18,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, defineEmits } from 'vue';
+import apiServices from '@/services/apiServices';
 
 export default defineComponent({
   name: 'DeleteForm',
@@ -25,12 +26,13 @@ export default defineComponent({
     const isFormValid = ref(false);
     const deleteId = ref<number | null>(null);
 
-    // Datos de ejemplo de la tabla
-    const items = ref([
-      { id: 1, name: 'Elemento 1' },
-      { id: 2, name: 'Elemento 2' },
-      { id: 3, name: 'Elemento 3' },
-    ]);
+    interface empApiMain { //estructura del objeto que se trae del api
+      success: boolean;
+      data: string;
+    }
+
+    const responseAPIEmpaques = ref<empApiMain>(); //INSTANCIA NUEVA DE RESPUETA API
+
 
     // Reglas de validación para el campo de eliminación
     const rules = {
@@ -40,16 +42,14 @@ export default defineComponent({
     };
 
     // Función para eliminar el elemento por ID
-    const deleteById = () => {
+    const deleteById = async () => {
       if (isFormValid.value && deleteId.value !== null) {
-        const index = items.value.findIndex((item) => item.id === deleteId.value);
-        if (index !== -1) {
-          items.value.splice(index, 1);
-          console.log(`Elemento con ID ${deleteId.value} eliminado`);
-          // Aquí puedes hacer cualquier otra acción, como enviar los datos a una API.
+        responseAPIEmpaques.value = await apiServices.deleteData(`Empaques/DelEmpById/${deleteId.value}`);
+        if(responseAPIEmpaques.value?.success){
           emit('closeDialog');
-        } else {
-          console.log(`Elemento con ID ${deleteId.value} no encontrado`);
+        }
+        else{
+          //Poner un mensaje
         }
       }
     };
@@ -66,7 +66,6 @@ export default defineComponent({
       deleteId,
       isFormValid,
       rules,
-      items,
       deleteById,
       cancelForm,
     };

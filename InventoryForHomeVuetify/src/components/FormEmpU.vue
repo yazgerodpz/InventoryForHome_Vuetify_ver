@@ -17,28 +17,17 @@
         </v-col>
       </v-row>
     </v-form>
-    
-    <v-form v-if="selectedItem" v-model="isUpdateFormValid" >
-    <v-text-field
-      v-model="selectedItem.typeStockName"
-      label="Tipo de Stock"
-      :rules="[rules.required]"
-      required
-    ></v-text-field>
 
-    <v-switch
-  v-model="selectedItem.active"
-  label=""
-  :label-checked="'Sí'"
-  :label-unchecked="'No'"
-  color="green"
-  off-color="red"
-  thumb-color="white"
-></v-switch>
-    <v-btn :disabled="!isUpdateFormValid" color="success"  @click="updateName">
-            Actualizar
-          </v-btn>
-  </v-form>
+    <v-form v-if="selectedItem" v-model="isUpdateFormValid">
+      <v-text-field v-model="selectedItem.typeStockName" label="Tipo de Stock" :rules="[rules.required]"
+        required></v-text-field>
+
+      <v-switch v-model="selectedItem.active" label="" :label-checked="'Sí'" :label-unchecked="'No'" color="green"
+        off-color="red" thumb-color="white"></v-switch>
+      <v-btn :disabled="!isUpdateFormValid" color="success" @click="updateName">
+        Actualizar
+      </v-btn>
+    </v-form>
 
   </v-container>
 </template>
@@ -54,7 +43,7 @@ export default defineComponent({
     // const newName = ref<string>('');
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
-    const selectedItem = ref<empMain | null >(null);
+    const selectedItem = ref<empMain | null>(null);
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
       required: (value: string | number | null) => !!value || 'Campo requerido',
@@ -64,13 +53,13 @@ export default defineComponent({
 
 
     interface empMain { //estructura de la información de la tabla
-        idTypeStock: number;
-        typeStockName: string;
-        active: boolean;
+      idTypeStock: number;
+      typeStockName: string;
+      active: boolean;
     }
     interface empApiMain { //estructura del objeto que se trae del api
-    success: boolean;
-    data: empMain;
+      success: boolean;
+      data: empMain;
     }
 
     const responseAPIEmpaques = ref<empApiMain>(); //INSTANCIA NUEVA DE RESPUETA API
@@ -79,28 +68,28 @@ export default defineComponent({
     const searchById = async () => {
       //LAMADA DE API Y ASIGNACION DE VALORES:
       responseAPIEmpaques.value = await apiServices.getData(`Empaques/ReadEmpById/${searchId.value}`);
-       // Acceder al valor del ref
-       const response = responseAPIEmpaques.value; // Acceder a .value del ref
-       console.log(response?.data)
-     
-        if(response?.success){
-          selectedItem.value = response.data;
-          console.log(selectedItem);
+      // Acceder al valor del ref
+      const response = responseAPIEmpaques.value; // Acceder a .value del ref
+      console.log(response?.data)
 
-        }
+      if (response?.success) {
+        selectedItem.value = response.data;
+        console.log(selectedItem);
+
+      }
     };
-    
+
     // Función para actualizar el nombre del empaque
     const updateName = async () => {
-      
+
       if (isUpdateFormValid.value) {
         console.log(selectedItem.value);
         //Enviar a Post de Update
-        responseAPIEmpaques.value = await apiServices.postData('Empaques/EditEmp/nuevoItem',selectedItem.value);
-                console.log(responseAPIEmpaques);
-                if(responseAPIEmpaques.value?.success){
-                    emit('closeDialog')
-                }
+        responseAPIEmpaques.value = await apiServices.postData('Empaques/EditEmp/nuevoItem', selectedItem.value);
+        console.log(responseAPIEmpaques);
+        if (responseAPIEmpaques.value?.success) {
+          emit('closeDialog')
+        }
 
       }
     };

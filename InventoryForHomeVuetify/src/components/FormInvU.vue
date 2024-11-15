@@ -19,51 +19,68 @@
     </v-form>
 
     <!-- Formulario para actualizar información del artículo si el elemento es encontrado -->
-    <v-form v-if="selectedItem" v-model="isUpdateFormValid" @submit.prevent="updateFields">
-      <v-row>
-        <!-- Campo para nombre de artículo -->
-        <v-col cols="12" md="4">
-          <v-text-field v-model="selectedItem.ItemName" label="Nombre del artículo" :rules="[rules.required]" outlined
-            required></v-text-field>
-        </v-col>
+    <v-form v-if="selectedItem" v-model="isUpdateFormValid">
+      <!-- Nombre del artículo -->
+      <v-text-field
+        v-model="selectedItem.itemName"
+        label="Nombre del Artículo"
+        :rules="[rules.required]"
+        required
+      ></v-text-field>
 
         <!-- Campo para cantidad (numérico) -->
-        <v-col cols="12" md="4">
-          <v-text-field v-model.number="selectedItem.Stock" label="Cantidad" type="number"
-            :rules="[rules.required, rules.isNumber]" outlined required></v-text-field>
-        </v-col>
-
-        <!-- Campo para regla de prioridad (list box) -->
-        <v-col cols="12" md="4">
-          <v-select v-model="selectedItem.selectedPriority" :items="selectedItem.priorityOptions" item-title="typePrioritaryName"
-            item-value="idTypePrioritary" label="Seleccione Prioridad"
-            :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
-        </v-col>
+         <!-- Stock -->
+        <v-text-field
+          v-model="selectedItem.stock"
+          label="Cantidad en Stock"
+          :rules="[rules.required, rules.isNumber]"
+          type="number"
+          required
+        ></v-text-field>
+        <!-- Tipo de Prioridad -->
+        <v-select
+          v-model="selectedPriority"
+          :items="priorityOptions"
+          item-title="typePrioritaryName"          
+          item-value="idTypePrioritary"
+          label="Tipo de Prioridad"
+          :rules="[v => !!v || 'Este campo es obligatorio']" 
+          required
+        ></v-select>
 
         <!-- Campo para tipo de empaque (list box) -->
-        <v-col cols="12" md="4">
-          <v-select v-model="selectedItem.selectedStock" :items="selectedItem.stockOptions" item-title="typeStockName" item-value="idTypeStock"
-            label="Seleccione Tipo de Stock" :rules="[v => !!v || 'Este campo es obligatorio']" required></v-select>
-        </v-col>
+        <!-- <v-col cols="12" md="4"> -->
+          <v-select v-model="selectedStock" 
+            :items="stockOptions" 
+            item-title="typeStockName" 
+            item-value="idTypeStock"
+            label="Seleccione Tipo de Stock" 
+            :rules="[v => !!v || 'Este campo es obligatorio']" 
+            required></v-select>
 
-        <!-- Campo para fecha de compra -->
-        <v-col cols="12" md="4">
-          <v-text-field v-model="selectedItem.PurchesDate" label="Fecha de compra" type="date" :rules="[rules.required]" outlined
-            required></v-text-field>
-        </v-col>
+        <!-- Fecha de Compra -->
+        <v-date-picker
+          v-model="fechaCompra"
+          label="Fecha de Compra"
+          :rules="[rules.required]"
+          required
+        ></v-date-picker>
+        <!-- Fecha de Expiración -->
+        <v-date-picker
+          v-model="fechaExpiracion"
+          label="Fecha de Expiración"
+          :rules="[rules.required]"
+          required
+        ></v-date-picker>
 
-        <!-- Campo para fecha de expiración -->
-        <v-col cols="12" md="4">
-          <v-text-field v-model="selectedItem.ExpirationDate" label="Fecha de expiración" type="date" :rules="[rules.required]"
-            outlined required></v-text-field>
-        </v-col>
+    <!-- Estado Activo/Inactivo -->
+    <v-switch v-model="selectedItem.active" label="" :label-checked="'Sí'" :label-unchecked="'No'" color="green"
+        off-color="red" thumb-color="white"></v-switch>
 
-        <v-col cols="12" class="d-flex align-center">
-          <v-btn :disabled="!isUpdateFormValid" color="success" type="submit">
-            Actualizar
-          </v-btn>
-        </v-col>
-      </v-row>
+        
+    <v-btn :disabled="!isUpdateFormValid" color="success" @click="updateFields">
+        Actualizar
+      </v-btn>
     </v-form>
   </v-container>
 </template>
@@ -77,19 +94,19 @@ export default defineComponent({
   name: 'UpdateArticleForm',
   setup(props, { emit }) {
     const searchId = ref<number | null>(null);
-    // const newArticleName = ref('');
-    // const newQuantity = ref<number | null>(null);
-    // const newPriorityRule = ref<number | null>(null);
-    // const newPackagingType = ref<number | null>(null);
-    // const newPurchaseDate = ref<Date | null>(null);
-    // const newExpirationDate = ref<Date | null>(null);
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
-    let selectedItem = ref<DataItemApi>(); // Elemento encontrado en la búsqueda
+    const selectedItem = ref<DataItemApi | null>(null); // Elemento encontrado en la búsqueda
+    // const selectedPriority = ref<prioMain>();
+    // const selectedStock = ref<empMain>();
+    const selectedPriority = ref<number >(0);
+    const selectedStock = ref<number >(0);
+    const fechaCompra = ref<Date>(new Date());
+    const fechaExpiracion = ref<Date>(new Date());
 
     interface empMain { //estructura de la información de la tabla
-      IdTypeStock: number;
-      TypeStockName: string;
+      idTypeStock: number;
+      typeStockName: string;
       active: boolean;
     }
 
@@ -102,9 +119,9 @@ export default defineComponent({
     const stockOptions = ref<empMain[]>([]); //LA LISTA DE OBJETOS QUE VOY A MONTAR EN MIS INTERFACES
 
     interface prioMain {
-      IdTypePrioritary: number;
-      TypePrioritaryName: string;
-      Description: string;
+      idTypePrioritary: number;
+      typePrioritaryName: string;
+      _Description: string;
       active: boolean;
     }
 
@@ -118,12 +135,12 @@ export default defineComponent({
 
     const getCatalogos = async () => {
       try {
-        responseAPIEmpaques.value = await ApiService.getData<empApiMain>('Empaques/ReadEmps',"");
+        responseAPIEmpaques.value = await ApiService.getData<empApiMain>('Empaques/ReadEmps');
         // console.log(responseAPIEmpaques.value);
         stockOptions.value = responseAPIEmpaques.value.data;
 
-        responseAPIPrioridades.value = await ApiService.getData<prioApiMain>('Prioridades/ReadPrios',"");
-        // console.log(responseAPIPrioridades.value);
+        responseAPIPrioridades.value = await ApiService.getData<prioApiMain>('Prioridades/ReadPrios');
+        console.log(responseAPIPrioridades.value);
         priorityOptions.value = responseAPIPrioridades.value.data;
 
       }
@@ -134,28 +151,6 @@ export default defineComponent({
       }
     }
 
-    // Ejemplo de datos de la tabla
-    // const items = ref([
-    //   {
-    //     id: 1,
-    //     articleName: 'Empaque 1',
-    //     quantity: 10,
-    //     priorityRule: 'Alta',
-    //     packagingType: 'Caja',
-    //     purchaseDate: '2024-01-01',
-    //     expirationDate: '2024-12-31',
-    //   },
-    //   {
-    //     id: 2,
-    //     articleName: 'Empaque 2',
-    //     quantity: 5,
-    //     priorityRule: 'Media',
-    //     packagingType: 'Bolsa',
-    //     purchaseDate: '2024-02-01',
-    //     expirationDate: '2024-11-30',
-    //   },
-    // ]);
-
     
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
@@ -165,14 +160,14 @@ export default defineComponent({
     };
     
     interface DataItemApi {
-      IdItem: number;
-      ItemName: string;
-      Stock: number;
-      IdTypePrioritary: number;
-      IdTypeStock: number;
-      PurchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
-      ExpirationDate: Date; // Lo mismo aquí
-      Active: boolean
+      idItem: number;
+      itemName: string;
+      stock: number;
+      idTypePrioritary: number;
+      idTypeStock: number;
+      purchesDate: Date; // Puedes usar string si prefieres manejarlo como una cadena
+      expirationDate: Date; // Lo mismo aquí
+      active: boolean
     }
 
     interface ResponseApi { //OBJETO DE RESPUESTA API
@@ -184,46 +179,59 @@ export default defineComponent({
 
     // Función para buscar el elemento por ID
     const searchById = async () => {
-      responseAPIInventario.value = await apiServices.getData(`Inventario/ReadInvById/${searchId.value}`, '');
+      responseAPIInventario.value = await apiServices.getData(`Inventario/ReadInvById/${searchId.value}`);
       console.log(responseAPIInventario);
-      // selectedItem.value = items.value.find((item) => item.id === searchId.value);
-      if (selectedItem.value) {
-        // newArticleName.value = selectedItem.value.articleName;
-        // newQuantity.value = selectedItem.value.quantity;
-        // newPriorityRule.value = selectedItem.value.priorityRule;
-        // newPackagingType.value = selectedItem.value.packagingType;
-        // newPurchaseDate.value = selectedItem.value.purchaseDate;
-        // newExpirationDate.value = selectedItem.value.expirationDate;
-      } else {
-        console.log(`Elemento con ID ${searchId.value} no encontrado`);
+      // Acceder al valor del ref
+      const response = responseAPIInventario.value; // Acceder a .value del ref
+      console.log(response?.data)
+      if (response?.success) {
+        selectedItem.value = response.data;
+        console.log('aqui');
+        console.log(selectedItem.value);
+        //Se pasa el valor de los ids a los dropdowns
+        selectedPriority.value = selectedItem.value?.idTypePrioritary;
+        //Se pasa el valor de los ids a los dropdowns
+        selectedStock.value = selectedItem.value?.idTypeStock;
+        //Se pasa la fecha de el item al datepicker
+        fechaCompra.value =  new Date(selectedItem.value.purchesDate);
+        //Se pasa la fecha de el item al datepicker
+        fechaExpiracion.value = new Date(selectedItem.value.expirationDate)
+        console.log(selectedPriority.value);
       }
     };
 
     // Función para actualizar los campos del artículo
-    const updateFields = () => {
-      if (selectedItem.value) {
-        // selectedItem.value.articleName = newArticleName.value;
-        // selectedItem.value.quantity = newQuantity.value;
-        // selectedItem.value.priorityRule = newPriorityRule.value;
-        // selectedItem.value.packagingType = newPackagingType.value;
-        // selectedItem.value.purchaseDate = newPurchaseDate.value;
-        // selectedItem.value.expirationDate = newExpirationDate.value;
-        // console.log(`Elemento con ID ${selectedItem.value.id} actualizado.`);
-        emit('closeDialog');
+    const updateFields = async () => {
+      if (isUpdateFormValid.value) {
+        console.log(selectedItem.value);
+        //Enviar a Post de Update
+      
+        console.log(selectedPriority.value);
+        if(selectedItem.value)
+        {
+            //Se pasa el valor de los ids desde el dropdown hacia el objeto a acutalizar
+            selectedItem.value.idTypePrioritary = selectedPriority.value;    
+            selectedItem.value.idTypeStock = selectedStock.value;     
+            selectedItem.value.purchesDate = fechaCompra.value;
+            selectedItem.value.expirationDate = fechaExpiracion.value; 
+        }
+        console.log(selectedItem.value);
+        responseAPIInventario.value = await apiServices.postData(`Inventario/EditarInv/actItem`, selectedItem.value);
+        console.log(responseAPIInventario);
+        if (responseAPIInventario.value?.success) {
+
+          emit('closeDialog');
+        }
       }
     };
 
     // Función para limpiar solo la búsqueda
     const cancelar = () => {
       searchId.value = null;
-      selectedItem = ref<DataItemApi>();
+      // selectedItem = ref<DataItemApi>();
       console.log('Formulario cancelado');
       emit('closeDialog');
     };
-
-    // Variable para almacenar la opción seleccionada
-    const selectedPriority = ref<number | null>(null);
-    const selectedStock = ref<number | null>(null);
 
     // Ejecutar getCatalogos antes de que el componente se monte
     onBeforeMount(() => {
@@ -232,21 +240,15 @@ export default defineComponent({
 
     return {
       searchId,
-      // newArticleName,
-      // newQuantity,
-      // newPriorityRule,
-      // newPackagingType,
-      // newPurchaseDate,
-      // newExpirationDate,
       isFormValid,
       isUpdateFormValid,
       rules,
-      // items,
       selectedItem,
       searchById,
       updateFields,
       cancelar,
-
+      fechaCompra,
+      fechaExpiracion,
       stockOptions,
       selectedStock,
       priorityOptions,

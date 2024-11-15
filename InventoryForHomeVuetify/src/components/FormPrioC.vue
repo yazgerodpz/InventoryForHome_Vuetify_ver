@@ -22,10 +22,10 @@ export default defineComponent({
     const nuevaRegla = ref<string>('');
     const descripcion = ref<string>('');
     interface prioMain {
-      IdTypePrioritary: number;
-      TypePrioritaryName: string;
-      _Description: string;
-      Active: boolean;
+      idTypePrioritary: number;
+      typePrioritaryName: string;
+      _description: string;
+      active: boolean;
     }
 
     interface prioApiMain { //estructura del objeto que se trae del api
@@ -52,10 +52,10 @@ export default defineComponent({
       if (valid.value)
       {
         const nuevoReglaPriority: prioMain = {
-            IdTypePrioritary: 0,
-            TypePrioritaryName: nuevaRegla.value,
-            _Description: descripcion.value,
-            Active: true
+            idTypePrioritary: 0,
+            typePrioritaryName: nuevaRegla.value,
+            _description: descripcion.value,
+            active: true
         };
         console.log(nuevoReglaPriority);
         responseAPIPrioridad.value = await apiServices.postData('Prioridades/CrearPrios/nuevoReglaPrio/',nuevoReglaPriority);
