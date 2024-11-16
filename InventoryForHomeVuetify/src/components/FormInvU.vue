@@ -82,6 +82,36 @@
         Actualizar
       </v-btn>
     </v-form>
+
+    <!-- Alerta de éxito (si el proceso de eliminación fue exitoso) -->
+    <v-alert
+      v-if="showSuccessAlert"
+      type="success"
+      dismissible
+      @input="showSuccessAlert = false"
+    >
+      El artículo se actualizo correctamente.
+    </v-alert>
+
+    <!-- Alerta de error -->
+    <v-alert
+      v-if="showAlert"
+      type="error"
+      dismissible
+      @input="showAlert = false"
+    >
+      El elemento no existe o no pudo ser encontrado.
+    </v-alert>
+
+    <!-- Alerta de fallo en la operación -->
+    <v-alert
+      v-if="showAlert2"
+      type="error"
+      dismissible
+      @input="showAlert2 = false"
+    >
+      El elemento no se pudo actualizar.
+    </v-alert>
   </v-container>
 </template>
 
@@ -89,6 +119,7 @@
 import { defineComponent, ref, onBeforeMount, defineEmits } from 'vue';
 import ApiService from '@/services/apiServices';
 import apiServices from '@/services/apiServices';
+import { tr } from 'vuetify/locale';
 
 export default defineComponent({
   name: 'UpdateArticleForm',
@@ -97,12 +128,13 @@ export default defineComponent({
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
     const selectedItem = ref<DataItemApi | null>(null); // Elemento encontrado en la búsqueda
-    // const selectedPriority = ref<prioMain>();
-    // const selectedStock = ref<empMain>();
     const selectedPriority = ref<number >(0);
     const selectedStock = ref<number >(0);
     const fechaCompra = ref<Date>(new Date());
     const fechaExpiracion = ref<Date>(new Date());
+    const showSuccessAlert = ref(false); // Controla la visibilidad de la alerta de éxito
+    const showAlert = ref(false); // Controla la visibilidad de la alerta
+    const showAlert2 = ref(false); // Controla la visibilidad de la alerta
 
     interface empMain { //estructura de la información de la tabla
       idTypeStock: number;
@@ -197,6 +229,10 @@ export default defineComponent({
         //Se pasa la fecha de el item al datepicker
         fechaExpiracion.value = new Date(selectedItem.value.expirationDate)
         console.log(selectedPriority.value);
+        showAlert.value = false;
+      }else{
+        showAlert.value = true; // Mostrar alerta si no se encuentra el elemento
+          return;
       }
     };
 
@@ -219,8 +255,12 @@ export default defineComponent({
         responseAPIInventario.value = await apiServices.postData(`Inventario/EditarInv/actItem`, selectedItem.value);
         console.log(responseAPIInventario);
         if (responseAPIInventario.value?.success) {
-
-          emit('closeDialog');
+          setTimeout(() => {
+            emit('closeDialog');
+          }, 3000); // 3000 ms = 3 segundos
+          showSuccessAlert.value = true;
+        }else{
+          showAlert2.value = true
         }
       }
     };
@@ -252,7 +292,11 @@ export default defineComponent({
       stockOptions,
       selectedStock,
       priorityOptions,
-      selectedPriority
+      selectedPriority,
+
+      showAlert,
+      showSuccessAlert,
+      showAlert2
     };
   },
 });

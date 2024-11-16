@@ -29,6 +29,36 @@
       </v-btn>
     </v-form>
 
+    <!-- Alerta de éxito (si el proceso de eliminación fue exitoso) -->
+    <v-alert
+      v-if="showSuccessAlert"
+      type="success"
+      dismissible
+      @input="showSuccessAlert = false"
+    >
+      El empaque se actualizo correctamente.
+    </v-alert>
+
+    <!-- Alerta de error -->
+    <v-alert
+      v-if="showAlert"
+      type="error"
+      dismissible
+      @input="showAlert = false"
+    >
+      El elemento no existe o no pudo ser encontrado.
+    </v-alert>
+
+    <!-- Alerta de fallo en la operación -->
+    <v-alert
+      v-if="showAlert2"
+      type="error"
+      dismissible
+      @input="showAlert2 = false"
+    >
+      El elemento no se pudo actualizar.
+    </v-alert>
+
   </v-container>
 </template>
 
@@ -44,6 +74,10 @@ export default defineComponent({
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
     const selectedItem = ref<empMain | null>(null);
+    const showSuccessAlert = ref(false); // Controla la visibilidad de la alerta de éxito
+    const showAlert = ref(false); // Controla la visibilidad de la alerta
+    const showAlert2 = ref(false); // Controla la visibilidad de la alerta
+    
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
       required: (value: string | number | null) => !!value || 'Campo requerido',
@@ -75,7 +109,10 @@ export default defineComponent({
       if (response?.success) {
         selectedItem.value = response.data;
         console.log(selectedItem);
-
+        showAlert.value = false;
+      }else{
+        showAlert.value = true; // Mostrar alerta si no se encuentra el elemento
+          return;
       }
     };
 
@@ -88,9 +125,13 @@ export default defineComponent({
         responseAPIEmpaques.value = await apiServices.postData('Empaques/EditEmp/nuevoItem', selectedItem.value);
         console.log(responseAPIEmpaques);
         if (responseAPIEmpaques.value?.success) {
-          emit('closeDialog')
+          setTimeout(() => {
+            emit('closeDialog');
+          }, 3000); // 3000 ms = 3 segundos
+          showSuccessAlert.value = true;
+        }else{
+          showAlert2.value = true
         }
-
       }
     };
 
@@ -111,6 +152,9 @@ export default defineComponent({
       searchById,
       updateName,
       cancelar,
+      showAlert,
+      showSuccessAlert,
+      showAlert2
     };
   },
 });

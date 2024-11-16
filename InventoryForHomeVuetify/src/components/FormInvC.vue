@@ -22,6 +22,16 @@
     <v-spacer></v-spacer>
     <v-btn color="primary" @click="submitForm" class="ma-2">Enviar</v-btn>
     <v-btn color="secondary" @click="cancelForm" class="ma-2">Cancelar</v-btn>
+
+    <!-- Alerta de éxito (si el proceso de eliminación fue exitoso) -->
+    <v-alert
+      v-if="showSuccessAlert"
+      type="success"
+      dismissible
+      @input="showSuccessAlert = false"
+    >
+      El artículo se creo correctamente.
+    </v-alert>
   </v-container>
 </template>
 
@@ -37,10 +47,9 @@ export default defineComponent({
     const formCrear = ref();
     const nombreArticulo = ref<string>('');
     const cantidad = ref<number>(1);
-    // const reglaPrioridad = ref<number | null>(null);
-    // const tipoEmpaque = ref<number | null>(null);
     const fechaCompra = ref<Date>(new Date());
     const fechaExpiracion = ref<Date>(new Date());
+    const showSuccessAlert = ref(false); // Controla la visibilidad de la alerta de éxito
 
     interface DataItemApi {
       idItem: number;
@@ -140,7 +149,10 @@ export default defineComponent({
         console.log(responseAPIInventario);
         if(responseAPIInventario.value?.success){
           
-          emit('closeDialog');
+          setTimeout(() => {
+            emit('closeDialog');
+          }, 3000); // 3000 ms = 3 segundos
+          showSuccessAlert.value = true;
         }
         // Aquí puedes enviar los datos a una API o realizar otra acción.
       }
@@ -183,7 +195,9 @@ export default defineComponent({
       priorityOptions,
       selectedPriority,
       stockOptions,
-      selectedStock
+      selectedStock,
+
+      showSuccessAlert,
     };
   },
 });

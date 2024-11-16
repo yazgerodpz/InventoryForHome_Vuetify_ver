@@ -7,6 +7,17 @@
     <v-spacer></v-spacer>
     <v-btn color="primary" @click="submitForm" class="ma-2">Enviar</v-btn>
     <v-btn color="secondary" @click="cancelForm" class="ma-2">Cancelar</v-btn>
+
+    <!-- Alerta de éxito (si el proceso de eliminación fue exitoso) -->
+    <v-alert
+      v-if="showSuccessAlert"
+      type="success"
+      dismissible
+      @input="showSuccessAlert = false"
+    >
+      La nueva regla de prioridad se creo correctamente.
+    </v-alert>
+    
   </v-container>
 </template>
 
@@ -21,6 +32,8 @@ export default defineComponent({
     const formCrear = ref();
     const nuevaRegla = ref<string>('');
     const descripcion = ref<string>('');
+    const showSuccessAlert = ref(false); // Controla la visibilidad de la alerta de éxito
+
     interface prioMain {
       idTypePrioritary: number;
       typePrioritaryName: string;
@@ -61,11 +74,12 @@ export default defineComponent({
         responseAPIPrioridad.value = await apiServices.postData('Prioridades/CrearPrios/nuevoReglaPrio/',nuevoReglaPriority);
         console.log(responseAPIPrioridad);
         if(responseAPIPrioridad.value?.success){
-          emit('closeDialog');
+          setTimeout(() => {
+            emit('closeDialog');
+          }, 3000); // 3000 ms = 3 segundos
+          showSuccessAlert.value = true;
 
         }
-        // console.log('Descripción:', descripcion.value);
-        // Aquí puedes enviar los datos a una API o realizar otra acción.
       }
     };
 
@@ -86,6 +100,7 @@ export default defineComponent({
       descripcionRules,
       submitForm,
       cancelForm,
+      showSuccessAlert,
     };
   },
 });

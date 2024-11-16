@@ -35,8 +35,38 @@
       <v-btn :disabled="!isUpdateFormValid" color="success" @click="updateFields">
         Actualizar
       </v-btn>
-      <!-- </v-col> -->
     </v-form>
+
+    <!-- Alerta de éxito (si el proceso de eliminación fue exitoso) -->
+    <v-alert
+      v-if="showSuccessAlert"
+      type="success"
+      dismissible
+      @input="showSuccessAlert = false"
+    >
+      la regla de prioridad se actualizo correctamente.
+    </v-alert>
+
+    <!-- Alerta de error -->
+    <v-alert
+      v-if="showAlert"
+      type="error"
+      dismissible
+      @input="showAlert = false"
+    >
+      El elemento no existe o no pudo ser encontrado.
+    </v-alert>
+
+    <!-- Alerta de fallo en la operación -->
+    <v-alert
+      v-if="showAlert2"
+      type="error"
+      dismissible
+      @input="showAlert2 = false"
+    >
+      El elemento no se pudo actualizar.
+    </v-alert>
+
   </v-container>
 </template>
 
@@ -51,6 +81,9 @@ export default defineComponent({
     const isFormValid = ref(false);
     const isUpdateFormValid = ref(false);
     const selectedItem = ref<prioMain | null>(null); // Elemento encontrado en la búsqueda
+    const showSuccessAlert = ref(false); // Controla la visibilidad de la alerta de éxito
+    const showAlert = ref(false); // Controla la visibilidad de la alerta
+    const showAlert2 = ref(false); // Controla la visibilidad de la alerta
 
     // Reglas de validación para los campos de búsqueda y actualización
     const rules = {
@@ -84,6 +117,10 @@ export default defineComponent({
       if (response?.success) {
         selectedItem.value = response.data;
         console.log(selectedItem);
+        showAlert.value = false;
+      }else{
+        showAlert.value = true; // Mostrar alerta si no se encuentra el elemento
+          return;
       }
     };
 
@@ -95,8 +132,12 @@ export default defineComponent({
         responseAPIPrioridad.value = await apiServices.postData(`Prioridades/EditPrios/ActReglaPrio`, selectedItem.value);
         console.log(responseAPIPrioridad);
         if (responseAPIPrioridad.value?.success) {
-
-          emit('closeDialog');
+          setTimeout(() => {
+            emit('closeDialog');
+          }, 3000); // 3000 ms = 3 segundos
+          showSuccessAlert.value = true;
+        }else{
+          showAlert2.value = true
         }
       }
     };
@@ -111,8 +152,6 @@ export default defineComponent({
 
     return {
       searchId,
-      // newPriorityRule,
-      // newDescription,
       isFormValid,
       isUpdateFormValid,
       rules,
@@ -120,6 +159,10 @@ export default defineComponent({
       searchById,
       updateFields,
       cancelar,
+
+      showAlert,
+      showSuccessAlert,
+      showAlert2
     };
   },
 });

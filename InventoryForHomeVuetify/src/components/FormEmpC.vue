@@ -7,6 +7,16 @@
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="submitForm" class="ma-2">Enviar</v-btn>
         <v-btn color="secondary" @click="cancelForm" class="ma-2">Cancelar</v-btn>
+
+        <!-- Alerta de éxito (si el proceso de eliminación fue exitoso) -->
+    <v-alert
+      v-if="showSuccessAlert"
+      type="success"
+      dismissible
+      @input="showSuccessAlert = false"
+    >
+      El artículo se creo correctamente.
+    </v-alert>
     </v-container>
 </template>
 
@@ -20,6 +30,8 @@ export default defineComponent({
         const valid = ref(false);
         const formCrear = ref();
         const nombreEmpaque = ref<string>('');
+        const showSuccessAlert = ref(false); // Controla la visibilidad de la alerta de éxito
+
             interface empMain { //estructura de la información de la tabla
                 idTypeStock: number;
                 typeStockName: string;
@@ -50,7 +62,10 @@ export default defineComponent({
                 responseAPIEmpaques.value = await apiServices.postData('Empaques/CrearEmp/nombreEmpaque/',nuevoEmpaque);
                 console.log(responseAPIEmpaques);
                 if(responseAPIEmpaques.value?.success){
-                    emit('closeDialog')
+                    setTimeout(() => {
+                        emit('closeDialog');
+                    }, 3000); // 3000 ms = 3 segundos
+                    showSuccessAlert.value = true;
                 }
             }
         };
@@ -71,6 +86,7 @@ export default defineComponent({
             nombreEmpaqueRules,
             submitForm,
             cancelForm,
+            showSuccessAlert,
         };
     },
 });

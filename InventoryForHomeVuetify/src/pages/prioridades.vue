@@ -30,7 +30,7 @@
   </v-container>
   <!-- Tabla de datos -->
   <v-container>
-    <v-data-table :headers="headers" :items="mainPrio" :items-per-page="10" item-key="idTypePrioritary"
+    <v-data-table :headers="headers" :items="mainPrio" :items-per-page="5" item-key="idTypePrioritary"
       class="elevation-1">
       <template #item.active="{ item }">
         <v-icon :color="item.active ? 'green' : 'red'">

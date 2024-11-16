@@ -1,18 +1,47 @@
 <template>
   <v-container>
     <v-form v-model="isFormValid" @submit.prevent="deleteById">
-      <v-text-field
-        v-model.number="deleteId"
-        label="Introduzca el ID del elemento que desea eliminar"
-        type="number"
-        :rules="[rules.required, rules.isNumber, rules.nonNegative]"
-        outlined
-        required
-      ></v-text-field>
-      <v-spacer></v-spacer>
-      <v-btn @click="deleteById" color="primary" class="ma-2">Eliminar</v-btn>
-      <v-btn color="secondary" @click="cancelForm" class="ma-2">Cancelar</v-btn>
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-text-field
+            v-model.number="deleteId"
+            label="Introduzca el ID del elemento que desea eliminar"
+            type="number"
+            :rules="[rules.required, rules.isNumber, rules.nonNegative]"
+            outlined
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="8" class="d-flex align-center">
+              <v-btn @click="deleteById" :disabled="!isFormValid" color="error">
+                Eliminar
+              </v-btn>
+              <v-btn color="secondary" @click="cancelar" class="ml-2">
+                Cancelar
+              </v-btn>
+        </v-col>
+      </v-row>
     </v-form>
+
+    <!-- Alerta de éxito (si el proceso de eliminación fue exitoso) -->
+    <v-alert
+      v-if="showSuccessAlert"
+      type="success"
+      dismissible
+      @input="showSuccessAlert = false"
+    >
+      El elemento fue eliminado correctamente.
+    </v-alert>
+
+    <!-- Alerta de error -->
+    <v-alert
+      v-if="showAlert"
+      type="error"
+      dismissible
+      @input="showAlert = false"
+    >
+      El elemento no existe o no pudo ser encontrado.
+    </v-alert>
   </v-container>
 </template>
 
@@ -25,6 +54,8 @@ export default defineComponent({
   setup(props, {emit}) {
     const isFormValid = ref(false);
     const deleteId = ref<number | null>(null);
+    const showSuccessAlert = ref(false); // Controla la visibilidad de la alerta de éxito
+    const showAlert = ref(false); // Controla la visibilidad de la alerta
 
     interface empApiMain { //estructura del objeto que se trae del api
       success: boolean;
@@ -45,17 +76,23 @@ export default defineComponent({
     const deleteById = async () => {
       if (isFormValid.value && deleteId.value !== null) {
         responseAPIEmpaques.value = await apiServices.deleteData(`Empaques/DelEmpById/${deleteId.value}`);
-        if(responseAPIEmpaques.value?.success){
-          emit('closeDialog');
+        if (responseAPIEmpaques.value?.success) {
+          setTimeout(() => {
+            emit('closeDialog');
+          }, 3000); // 3000 ms = 3 segundos
+          showSuccessAlert.value = true;
+          showAlert.value = false;
         }
-        else{
+        else {
           //Poner un mensaje
+          showAlert.value = true; // Mostrar alerta si no se encuentra el elemento
+          return;
         }
       }
     };
 
     // Función para limpiar el campo de eliminación
-    const cancelForm = () => {
+    const cancelar = () => {
       deleteId.value = null;
       // Aquí podrías cerrar el formulario modal o redirigir al usuario si es necesario.
       console.log('Formulario cancelado');
@@ -67,7 +104,9 @@ export default defineComponent({
       isFormValid,
       rules,
       deleteById,
-      cancelForm,
+      cancelar,
+      showAlert,
+      showSuccessAlert,
     };
   },
 });
